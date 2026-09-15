@@ -508,6 +508,9 @@ def main() -> int:
         f"ошибок API: {failed}"
     )
     print(f"JSON: {output_json}\nCSV:  {output_csv}")
+    
+    if failed > 0:
+        return 1
     return 0
 
 

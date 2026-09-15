@@ -660,8 +660,13 @@ def main() -> int:
         print(f"  итог: кластеров с признаками дробления: {len(confirmed)} → {path_b}")
 
     print("\nГотово.")
+    
+    # Return 1 if there were errors in Module A
+    failed_a = sum(1 for c in locals().get("compliance_results", []) if c.get("status") == "ошибка")
+    if failed_a > 0:
+        return 1
+        
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

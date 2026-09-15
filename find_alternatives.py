@@ -647,10 +647,14 @@ def main() -> int:
     # Итоги
     with_alts = sum(1 for r in results if r["alternatives"])
     total_savings = sum(r["potential_savings_kzt"] for r in results)
+    failed = sum(1 for r in results if "ошибка обработки:" in r.get("note", ""))
     print(f"\nГотово: обработано {len(results)} из {total}; с альтернативами: {with_alts}; "
           f"суммарная потенциальная экономия: {total_savings:,} тг")
     print(f"Категорий в базе рынка: {len(db['categories'])} → {db_path}")
     print(f"Результат: {output_path}")
+    
+    if failed > 0:
+        return 1
     return 0
 
 
