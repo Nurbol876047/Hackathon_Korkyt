@@ -301,10 +301,8 @@ def render_table(view: pd.DataFrame) -> str | None:
     styler = (view[cols].style.map(style_risk, subset=["Риск"])
               .format({"Сумма, ₸": "{:,.0f}", "Экономия, ₸": "{:,.0f}", "Откл. от медианы, %": "{:+.1f}"},
                       na_rep="—"))
-    event = st.dataframe(styler, hide_index=True, use_container_width=True, key="contracts_table",
-                         height=min(60 + 36 * len(view), 520),
-                         column_config={"Риск": st.column_config.TextColumn(width="medium"),
-                                        "Сигналы": st.column_config.TextColumn(width="medium")})
+    event = st.dataframe(styler, use_container_width=True,
+                         height=min(60 + 36 * len(view), 520))
     rows = getattr(getattr(event, "selection", None), "rows", []) if event else []
     if rows and rows[0] < len(view):
         return view.iloc[rows[0]]["source_file"]
@@ -395,12 +393,12 @@ def block_alternatives(m: dict, data: dict):
     if has_price:
         adf.columns = ["Компания", "Город", "Цена, ₸", "Дешевле на, %", "Почему релевантно"]
         st.dataframe(adf.style.format({"Цена, ₸": "{:,.0f}", "Дешевле на, %": "{:.1f}"}),
-                     hide_index=True, width="stretch", height=min(60 + 36 * len(adf), 260))
+                     use_container_width=True, height=min(60 + 36 * len(adf), 260))
     else:
         adf = adf.drop(columns=["price_diff_pct"])
         adf.columns = ["Компания", "Город", "Цена, ₸", "Почему релевантно"]
         st.dataframe(adf.style.format({"Цена, ₸": "{:,.0f}"}),
-                     hide_index=True, width="stretch", height=min(60 + 36 * len(adf), 260))
+                     use_container_width=True, height=min(60 + 36 * len(adf), 260))
     src = "синтетический рынок (компании вымышлены, для демо)" if a.get("market_source") == "synthetic" \
         else a.get("market_source") or "—"
     st.markdown(f"<span class='muted'>Источник: {src} · проверено кандидатов: {a.get('candidates_checked', 0)}</span>",
@@ -427,7 +425,7 @@ def block_fragmentation(m: dict, data: dict):
         odf = pd.DataFrame(others)[["contract_id", "contract_date", "supplier", "amount_kzt", "service_text"]]
         odf.columns = ["Договор", "Дата", "Поставщик", "Сумма, ₸", "Предмет"]
         st.markdown("<span class='muted'>Остальные договоры кластера:</span>", unsafe_allow_html=True)
-        st.dataframe(odf.style.format({"Сумма, ₸": "{:,.0f}"}), hide_index=True, width="stretch",
+        st.dataframe(odf.style.format({"Сумма, ₸": "{:,.0f}"}), use_container_width=True,
                      height=min(60 + 36 * len(odf), 200))
 
 
