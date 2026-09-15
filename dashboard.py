@@ -804,7 +804,7 @@ def render_sidebar(data: dict, results_dir: Path):
                             f"{RISK_FG[RISK_OK] if ok else C_MUTED}'></span>{label}"
                             f"<span class='muted'> — {'готово' if ok else 'нет данных'}</span></div>",
                             unsafe_allow_html=True)
-    if st.sidebar.button("Обновить данные", width="stretch"):
+    if st.sidebar.button("Обновить данные", use_container_width=True):
         _read_json.clear()
         st.rerun()
     with st.sidebar.expander("Методика оценки риска"):
