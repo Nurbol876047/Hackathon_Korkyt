@@ -521,8 +521,8 @@ def run_pipeline(pdf_path: Path, api_key: str):
     
     env = os.environ.copy()
     
-    # Читаем ключ из .env, если он существует
-    env_file = base_dir / ".env"
+    # Читаем ключ из .env (в корне проекта), если он существует
+    env_file = Path(".env")
     if env_file.exists():
         with open(env_file, "r") as f:
             for line in f:
