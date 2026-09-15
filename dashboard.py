@@ -557,10 +557,16 @@ def run_pipeline(pdf_path: Path, api_key: str):
         env["GEMINI_API_KEY"] = api_key
         
     python_exe = sys.executable
+    import time
 
     def run_step(cmd, desc):
         st.write(f"⏳ {desc}...")
+        start_t = time.time()
         res = subprocess.run(cmd, env=env, capture_output=True, text=True)
+        elapsed = time.time() - start_t
+        if elapsed < 3.5:
+            time.sleep(3.5 - elapsed)
+            
         if res.returncode != 0:
             st.error(f"Ошибка в {desc}:\n{res.stderr}")
             return False

@@ -1,0 +1,161 @@
+{
+  "is_synthetic": true,
+  "note": "Синтетическая база: все компании вымышлены и сгенерированы для демо. Совпадения с реальными организациями случайны.",
+  "created_at": "2026-09-15T14:54:26",
+  "categories": {
+    "предоставление лицензий на программное обеспечение": {
+      "description": "Услуга включает передачу неисключительных прав на использование специализированного программного обеспечения, а также сопутствующие консультации и настройку от сертифицированных специалистов.",
+      "price_range_kzt": {
+        "min": 1500000,
+        "max": 12000000
+      },
+      "generated_at": "2026-09-15T14:55:59",
+      "companies": [
+        {
+          "company": "ИП «Aray Tech»",
+          "city": "Тараз",
+          "company_size": "малая",
+          "offer": "Передача неисключительных прав на лицензионное бухгалтерское ПО для 5 рабочих мест с базовой установкой.",
+          "tech_stack": "1С:Предприятие, MS Windows",
+          "price_kzt": 850000
+        },
+        {
+          "company": "ТОО «SyrSoft»",
+          "city": "Кызылорда",
+          "company_size": "малая",
+          "offer": "Предоставление годовых лицензий антивирусного ПО на 50 рабочих станций с первичной инсталляцией.",
+          "tech_stack": "Kaspersky Endpoint Security, ESET",
+          "price_kzt": 1120000
+        },
+        {
+          "company": "ИП «Baiterek IT Solutions»",
+          "city": "Туркестан",
+          "company_size": "малая",
+          "offer": "Лицензии на систему электронного документооборота для 15 пользователей и обучение персонала.",
+          "tech_stack": "Directum, PostgreSQL",
+          "price_kzt": 1380000
+        },
+        {
+          "company": "ТОО «Shymkent Инновации»",
+          "city": "Шымкент",
+          "company_size": "малая",
+          "offer": "Предоставление лицензий на CRM-систему на 30 пользователей с первичной настройкой воронок продаж.",
+          "tech_stack": "Bitrix24, PHP, MySQL",
+          "price_kzt": 1950000
+        },
+        {
+          "company": "ТОО «Kostanay Data Services»",
+          "city": "Костанай",
+          "company_size": "средняя",
+          "offer": "Годовые лицензии на систему управления проектами для 50 сотрудников с интеграцией с локальной почтой.",
+          "tech_stack": "Redmine, PostgreSQL, Docker",
+          "price_kzt": 2400000
+        },
+        {
+          "company": "ТОО «Batys IT Group»",
+          "city": "Актобе",
+          "company_size": "малая",
+          "offer": "Передача прав на офисный пакет и ПО для видеоконференций на 100 пользователей с инсталляцией.",
+          "tech_stack": "Р7-Офис, TrueConf, Linux",
+          "price_kzt": 2750000
+        },
+        {
+          "company": "ТОО «Astana Soft Tech»",
+          "city": "Астана",
+          "company_size": "средняя",
+          "offer": "Предоставление 40 лицензий корпоративного мессенджера и интеграция с существующим Active Directory.",
+          "tech_stack": "Element, Matrix, Docker",
+          "price_kzt": 3200000
+        },
+        {
+          "company": "ТОО «Caspian Digital»",
+          "city": "Атырау",
+          "company_size": "средняя",
+          "offer": "Лицензирование ПО для кадрового учета и 20 часов консультаций сертифицированного специалиста.",
+          "tech_stack": "1С:ZUP, MS SQL Server",
+          "price_kzt": 3800000
+        },
+        {
+          "company": "ТОО «Semey Tech Labs»",
+          "city": "Семей",
+          "company_size": "малая",
+          "offer": "Передача прав на ПО резервного копирования для 50 серверов с настройкой расписания бэкапов.",
+          "tech_stack": "Veeam Backup & Replication, VMware vSphere",
+          "price_kzt": 4150000
+        },
+        {
+          "company": "ТОО «QazCloud Systems»",
+          "city": "Алматы",
+          "company_size": "средняя",
+          "offer": "Лицензии на ERP-систему на 25 пользователей, базовое развертывание и 10 часов консультаций.",
+          "tech_stack": "1С:ERP, MS SQL Server, Linux",
+          "price_kzt": 4850000
+        },
+        {
+          "company": "ТОО «Ertis Tech»",
+          "city": "Павлодар",
+          "company_size": "средняя",
+          "offer": "Годовые лицензии на систему мониторинга сетевой инфраструктуры на 200 узлов и интеграция.",
+          "tech_stack": "Zabbix, Grafana, Prometheus",
+          "price_kzt": 5100000
+        },
+        {
+          "company": "ТОО «Zhetysu Digital»",
+          "city": "Талдыкорган",
+          "company_size": "малая",
+          "offer": "Передача прав на ПО защиты от утечек данных (DLP) на 80 ПК с базовой настройкой правил безопасности.",
+          "tech_stack": "InfoWatch, Traffic Inspector",
+          "price_kzt": 5600000
+        },
+        {
+          "company": "ТОО «Saryarka Software»",
+          "city": "Караганда",
+          "company_size": "средняя",
+          "offer": "Передача неисключительных прав на ГИС-Платформу на 10 рабочих мест и миграция пространственных данных.",
+          "tech_stack": "ArcGIS, QGIS, PostGIS",
+          "price_kzt": 6400000
+        },
+        {
+          "company": "ТОО «Sever-IT»",
+          "city": "Петропавловск",
+          "company_size": "средняя",
+          "offer": "Лицензии на систему BI-аналитики на 15 пользователей с разработкой 5 аналитических дашбордов.",
+          "tech_stack": "Apache Superset, ClickHouse, Python",
+          "price_kzt": 7300000
+        },
+        {
+          "company": "ТОО «Alatau Soft Innovation»",
+          "city": "Алматы",
+          "company_size": "средняя",
+          "offer": "Годовые лицензии на ПО виртуализации инфраструктуры (10 хостов) и развертывание экспертами.",
+          "tech_stack": "ROSA Virtualization, KVM, Linux",
+          "price_kzt": 8900000
+        },
+        {
+          "company": "ТОО «Nomad Tech Enterprise»",
+          "city": "Астана",
+          "company_size": "крупная",
+          "offer": "Корпоративные лицензии на СУБД и серверную виртуализацию на 30 серверов с полной настройкой.",
+          "tech_stack": "Postgres Pro Enterprise, Astra Linux, OpenStack",
+          "price_kzt": 14700000
+        },
+        {
+          "company": "ТОО «KazEnterprise Solutions»",
+          "city": "Астана",
+          "company_size": "крупная",
+          "offer": "Комплексные лицензии ERP-платформы на 300 пользователей, развертывание кластера и 100 часов техподдержки.",
+          "tech_stack": "Oracle ERP, Oracle DB, Red Hat Enterprise Linux",
+          "price_kzt": 18500000
+        },
+        {
+          "company": "ТОО «SilkRoad Integration»",
+          "city": "Алматы",
+          "company_size": "крупная",
+          "offer": "Передача прав на ПО кибербезопасности класса SIEM/EDR на 1000 хостов с интеграцией в SOC.",
+          "tech_stack": "MaxPatrol SIEM, Kaspersky EDR, Linux",
+          "price_kzt": 24200000
+        }
+      ]
+    }
+  }
+}

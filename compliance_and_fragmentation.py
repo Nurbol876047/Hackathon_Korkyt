@@ -597,11 +597,34 @@ def main() -> int:
 
     # --- Модуль Б ---
     if not args.skip_fragmentation:
+        frag_contracts = list(contracts)
+        if len(frag_contracts) == 1:
+            base = frag_contracts[0]
+            from datetime import timedelta
+            base_date = parse_date(base.get("contract_date", "")) or date.today()
+            
+            mock1 = dict(base)
+            mock1["source_file"] = "history_archive_01.pdf"
+            mock1["contract_number"] = "MOCK-001"
+            mock1["contract_date"] = (base_date - timedelta(days=12)).isoformat()
+            mock1["supplier"] = "ТОО «Строй Альянс» (mock)"
+            mock1["amount_kzt"] = 2800000
+            
+            mock2 = dict(base)
+            mock2["source_file"] = "history_archive_02.pdf"
+            mock2["contract_number"] = "MOCK-002"
+            mock2["contract_date"] = (base_date - timedelta(days=25)).isoformat()
+            mock2["supplier"] = "ИП «Trade Group» (mock)"
+            mock2["amount_kzt"] = 2950000
+            
+            frag_contracts.extend([mock1, mock2])
+            print("  [DEMO] Добавлены 2 моковых исторических договора для демонстрации дробления.", flush=True)
+
         print("МОДУЛЬ Б: детекция дробления закупок", flush=True)
         print(f"  пороги: similarity ≥ {SIMILARITY_THRESHOLD}, ≤ {MAX_DAYS_BETWEEN} дн., "
               f"один заказчик; условный порог конкурса {fmt_kzt(NO_TENDER_THRESHOLD_KZT)} ₸")
         try:
-            clusters, summary = find_fragmentation_clusters(contracts, args.embed_model)
+            clusters, summary = find_fragmentation_clusters(frag_contracts, args.embed_model)
         except Exception as exc:  # noqa: BLE001
             print(f"  ✖ эмбеддинги недоступны: {type(exc).__name__}: {str(exc)[:200]}", flush=True)
             clusters, summary = [], {"eligible": 0, "skipped": [], "pairs_similar": 0, "pairs_linked": 0}
