@@ -5,3 +5,4 @@ pandas>=2.2
 plotly>=5.24
 pikepdf>=9.0
 pypdf>=5.0
+openai\npydantic\npdf2image

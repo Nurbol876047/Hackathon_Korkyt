@@ -508,16 +508,16 @@ def render_details(m: dict, data: dict):
                 unsafe_allow_html=True)
 
     r1a, r1b = st.columns([1, 1])
-    with r1a, st.container(border=True):
+    with r1a, st.container():
         block_price(m, data)
-    with r1b, st.container(border=True):
+    with r1b, st.container():
         block_alternatives(m, data)
     r2a, r2b, r2c = st.columns([1.2, 1, 1])
-    with r2a, st.container(border=True):
+    with r2a, st.container():
         block_fragmentation(m, data)
-    with r2b, st.container(border=True):
+    with r2b, st.container():
         block_tor(m, data)
-    with r2c, st.container(border=True):
+    with r2c, st.container():
         block_integrity(m, data)
 
 
@@ -547,11 +547,11 @@ def run_pipeline(pdf_path: Path, api_key: str):
             for line in f:
                 if "=" in line and not line.strip().startswith("#"):
                     k, v = line.strip().split("=", 1)
-                    if k.strip() == "GEMINI_API_KEY":
-                        env["GEMINI_API_KEY"] = v.strip()
+                    if k.strip() == "OPENAI_API_KEY":
+                        env["OPENAI_API_KEY"] = v.strip()
                         
     if api_key:
-        env["GEMINI_API_KEY"] = api_key
+        env["OPENAI_API_KEY"] = api_key
         
     python_exe = sys.executable
     import time
