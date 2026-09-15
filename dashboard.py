@@ -2,379 +2,625 @@
 # -*- coding: utf-8 -*-
 """
 Аудит государственных закупок Казахстана.
-Этап 5 из 5 — Streamlit-дашборд: сводка результатов Этапов 1–4 для аудитора.
+Этап 5 из 5, модуль Б — итоговый дашборд: все результаты Этапов 1–5 в одном интерфейсе.
 
-Вход (папка --results, по умолчанию ./results; если пусто — ./demo_results):
-    contracts.json                — Этап 1
+Вход (папка результатов; по умолчанию ./results, если её нет — ./demo_results):
+    contracts.json                — Этап 1  (обязателен)
     alternatives.json             — Этап 2
     price_benchmark.json,
     category_stats.json           — Этап 3
     tor_compliance.json,
     fragmentation_clusters.json   — Этап 4
-Отсутствующие файлы не блокируют дашборд: соответствующий раздел показывает подсказку.
+    integrity_check.json          — Этап 5А
+Любой файл, кроме contracts.json, может отсутствовать — соответствующий блок покажет
+«данные недоступны», дашборд при этом открывается.
 
-Ключ стыковки — source_file. Всё, что показано, — индикаторы для проверки человеком.
+Ключ стыковки записей — source_file (имя исходного PDF).
+Всё, что показано, — индикаторы для проверки аудитором, а не юридический вердикт.
 
 Запуск:
-    streamlit run dashboard.py                       # ./results, иначе ./demo_results
-    streamlit run dashboard.py -- --results ./out    # своя папка
+    streamlit run dashboard.py
+    streamlit run dashboard.py -- --results ./results     # своя папка с результатами
 """
 
 import json
 import sys
+import os
+import shutil
+import subprocess
 from pathlib import Path
 
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 
-# Порог «сводного» риска и веса компонентов (в сумме 100). Каждый компонент — вклад
-# соответствующего этапа; отсутствие данных по этапу даёт 0, а не штраф.
-W_PRICE, W_COMPLIANCE, W_FRAGMENTATION = 45, 30, 25
-OVERALL_HIGH = 60
-OVERALL_CHECK = 30
+# ---------------------------------------------------------------------------
+# Пороги общего risk_level (максимум из четырёх компонентов)
+# ---------------------------------------------------------------------------
 
-PRICE_RISK_SCORE = {"высокий риск": 1.0, "требует проверки": 0.5, "норма": 0.0, "недостаточно данных": 0.0}
-COMPLIANCE_SCORE = {"высокий риск несоответствия": 1.0, "требует проверки": 0.5, "соответствует": 0.0,
-                    "недостаточно данных для проверки": 0.0}
-FRAG_SCORE = {"высокий": 1.0, "средний": 0.5, "низкий": 0.2}
+FRAG_SUSPICION_HIGH = 70       # suspicion_score кластера >= — высокий риск
+FRAG_SUSPICION_CHECK = 40      # >= — требует проверки
+INTEGRITY_HIGH_BELOW = 50      # integrity_score < — высокий риск
+INTEGRITY_CHECK_BELOW = 80     # < — требует проверки
+TOR_HIGH_BELOW = 50            # consistency_score < — высокий риск
+TOR_CHECK_BELOW = 80           # < — требует проверки
 
-RISK_COLORS = {"высокий риск": "#c0392b", "требует проверки": "#e67e22", "норма": "#27ae60",
-               "недостаточно данных": "#7f8c8d"}
+RISK_OK, RISK_CHECK, RISK_HIGH = "норма", "требует проверки", "высокий риск"
+RISK_ORDER = {RISK_OK: 0, RISK_CHECK: 1, RISK_HIGH: 2}
+RISK_LEVELS = [RISK_HIGH, RISK_CHECK, RISK_OK]
+
+# Палитра: тёмно-синий основной, серо-синий вторичный, три сдержанных цвета риска
+C_PRIMARY, C_SECONDARY, C_MUTED, C_LINE = "#1F3A5F", "#5B6B82", "#8A96A8", "#DDE2EA"
+RISK_FG = {RISK_OK: "#2E7D32", RISK_CHECK: "#A6731A", RISK_HIGH: "#B3261E"}
+RISK_BG = {RISK_OK: "#E6F2E8", RISK_CHECK: "#FBF1DC", RISK_HIGH: "#F9E3E1"}
+FONT = "Manrope, Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+
+CSS = f"""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+html, body, [class*="css"], .stMarkdown, .stDataFrame, .stMetric {{ font-family: {FONT}; }}
+.block-container {{ padding-top: 2.8rem; padding-bottom: 3rem; max-width: 1400px; }}
+h1, h2, h3, h4 {{ font-family: {FONT}; color: {C_PRIMARY}; letter-spacing: -0.01em; }}
+.hdr-title {{ font-size: 1.7rem; font-weight: 700; color: {C_PRIMARY}; margin: 0; }}
+.hdr-sub {{ color: {C_SECONDARY}; font-size: 0.95rem; margin-top: 0.2rem; }}
+.kpi {{ background: #F3F5F8; border: 1px solid {C_LINE}; border-radius: 8px; padding: 14px 18px; min-height: 96px; }}
+.kpi .lbl {{ color: {C_SECONDARY}; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }}
+.kpi .val {{ color: {C_PRIMARY}; font-size: 1.7rem; font-weight: 700; margin-top: 4px; line-height: 1.15; }}
+.kpi .sub {{ color: {C_SECONDARY}; font-size: 0.8rem; margin-top: 4px; }}
+.kpi.high .val {{ color: {RISK_FG[RISK_HIGH]}; }}
+.badge {{ display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }}
+.legend {{ color: {C_SECONDARY}; font-size: 0.82rem; margin: 4px 0 8px; }}
+.legend .sw {{ display:inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 4px 0 12px; vertical-align: middle; }}
+.card-title {{ font-weight: 700; color: {C_PRIMARY}; font-size: 1rem; margin-bottom: 4px; }}
+.muted {{ color: {C_SECONDARY}; font-size: 0.85rem; }}
+.na {{ color: {C_MUTED}; font-style: italic; }}
+.flag {{ background: #F3F5F8; border-left: 3px solid {C_SECONDARY}; padding: 6px 10px; margin: 6px 0; font-size: 0.88rem; border-radius: 0 4px 4px 0; }}
+.flag.high {{ border-left-color: {RISK_FG[RISK_HIGH]}; }}
+.flag.check {{ border-left-color: {RISK_FG[RISK_CHECK]}; }}
+section[data-testid="stSidebar"] {{ background: #F3F5F8; }}
+.stAppDeployButton {{ display: none; }}
+div[data-testid="stMetricValue"] {{ font-family: {FONT}; }}
+</style>
+"""
 
 
 # ---------------------------------------------------------------------------
-# Загрузка данных
+# Загрузка и объединение данных
 # ---------------------------------------------------------------------------
 
 def parse_results_dir() -> Path:
-    """`streamlit run dashboard.py -- --results DIR`; без аргумента — ./results или ./demo_results."""
+    """`streamlit run dashboard.py -- --results DIR`; без аргумента — ./results, иначе ./demo_results."""
+    if "results_dir" in st.session_state:
+        return st.session_state["results_dir"]
     argv = sys.argv[1:]
-    if "--results" in argv:
+    if "--results" in argv and argv.index("--results") + 1 < len(argv):
         return Path(argv[argv.index("--results") + 1])
-    for candidate in (Path("./results"), Path("./demo_results")):
+    for candidate in (Path("./user_data/results"), Path("./results"), Path("./demo_results")):
         if (candidate / "contracts.json").exists():
             return candidate
     return Path("./results")
 
 
 @st.cache_data(show_spinner=False)
-def load_json(path: str):
-    p = Path(path)
-    if not p.exists():
-        return None
-    with open(p, encoding="utf-8") as f:
+def _read_json(path: str, mtime: float):
+    """mtime в аргументах — чтобы кэш сбрасывался при перезаписи файла очередным этапом."""
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
-def load_all(results_dir: Path) -> dict:
-    names = ["contracts", "alternatives", "price_benchmark", "category_stats",
-             "tor_compliance", "fragmentation_clusters"]
-    return {n: load_json(str(results_dir / f"{n}.json")) for n in names}
+def load_json(path: Path):
+    """None, если файла нет или он битый — вызывающий код показывает «данные недоступны»."""
+    if not path.exists():
+        return None
+    try:
+        return _read_json(str(path), path.stat().st_mtime)
+    except (OSError, ValueError):
+        return None
+
+
+def price_component(b: dict | None) -> str:
+    if not b or b.get("risk_level") not in (RISK_OK, RISK_CHECK, RISK_HIGH):
+        return RISK_OK
+    return b["risk_level"]
+
+
+def frag_component(cluster: dict | None) -> str:
+    if not cluster:
+        return RISK_OK
+    s = cluster.get("suspicion_score") or 0
+    return RISK_HIGH if s >= FRAG_SUSPICION_HIGH else RISK_CHECK if s >= FRAG_SUSPICION_CHECK else RISK_OK
+
+
+def integrity_component(rec: dict | None) -> str:
+    if not rec or rec.get("integrity_score") is None:
+        return RISK_OK
+    s = rec["integrity_score"]
+    return RISK_HIGH if s < INTEGRITY_HIGH_BELOW else RISK_CHECK if s < INTEGRITY_CHECK_BELOW else RISK_OK
+
+
+def tor_component(rec: dict | None) -> str:
+    if not rec or rec.get("consistency_score") is None:
+        return RISK_OK
+    s = rec["consistency_score"]
+    return RISK_HIGH if s < TOR_HIGH_BELOW else RISK_CHECK if s < TOR_CHECK_BELOW else RISK_OK
+
+
+def load_all_data(results_dir: Path) -> dict:
+    """
+    Читает все JSON этапов и объединяет их по source_file в список записей `merged`.
+    Отсутствующий файл → соответствующий ключ = None, а в записях поле = None.
+    """
+    files = {
+        "contracts": "contracts.json", "alternatives": "alternatives.json",
+        "price_benchmark": "price_benchmark.json", "category_stats": "category_stats.json",
+        "tor_compliance": "tor_compliance.json", "fragmentation_clusters": "fragmentation_clusters.json",
+        "integrity_check": "integrity_check.json",
+    }
+    raw = {k: load_json(results_dir / v) for k, v in files.items()}
+    raw["missing"] = [k for k, v in raw.items() if v is None]
+
+    by_file = lambda key: {r.get("source_file"): r for r in (raw[key] or []) if r.get("source_file")}
+    alts, bench, comp, integ = (by_file("alternatives"), by_file("price_benchmark"),
+                                by_file("tor_compliance"), by_file("integrity_check"))
+    # Договор может входить в несколько кластеров дробления — берём самый подозрительный
+    frag: dict = {}
+    for cl in (raw["fragmentation_clusters"] or []):
+        for sf in cl.get("source_files", []):
+            if sf not in frag or cl["suspicion_score"] > frag[sf]["suspicion_score"]:
+                frag[sf] = cl
+
+    merged = []
+    for c in (raw["contracts"] or []):
+        sf = c.get("source_file", "")
+        parts = {"price": price_component(bench.get(sf)), "fragmentation": frag_component(frag.get(sf)),
+                 "integrity": integrity_component(integ.get(sf)), "tor": tor_component(comp.get(sf))}
+        overall = max(parts.values(), key=lambda lvl: RISK_ORDER[lvl])
+        reasons = [label for key, label in (("price", "цена"), ("fragmentation", "дробление"),
+                                            ("tor", "ТЗ"), ("integrity", "PDF"))
+                   if parts[key] != RISK_OK]
+        merged.append({
+            "source_file": sf, "contract": c, "alternatives": alts.get(sf), "benchmark": bench.get(sf),
+            "compliance": comp.get(sf), "cluster": frag.get(sf), "integrity": integ.get(sf),
+            "components": parts, "risk_level": overall, "reasons": reasons,
+        })
+    raw["merged"] = merged
+    return raw
 
 
 # ---------------------------------------------------------------------------
-# Сводная таблица по договорам (стыковка по source_file)
+# Форматирование
 # ---------------------------------------------------------------------------
 
 def fmt_kzt(v) -> str:
     try:
-        return f"{int(round(float(v))):,}".replace(",", " ") + " ₸"
+        return f"{int(round(float(v))):,}".replace(",", " ") + " ₸"
     except (TypeError, ValueError):
         return "—"
 
 
 def fmt_mln(v) -> str:
-    """Компактный формат для метрик (единица «млн ₸» — в подписи)."""
     try:
-        return f"{float(v) / 1_000_000:.1f}".replace(".", ",")
+        return f"{float(v) / 1_000_000:,.1f}".replace(",", " ").replace(".", ",") + " млн ₸"
     except (TypeError, ValueError):
         return "—"
 
 
-def build_overview(data: dict) -> pd.DataFrame:
-    contracts = data["contracts"] or []
-    alts = {r["source_file"]: r for r in (data["alternatives"] or [])}
-    bench = {r["source_file"]: r for r in (data["price_benchmark"] or [])}
-    comp = {r["source_file"]: r for r in (data["tor_compliance"] or [])}
-    frag = {}
-    for cl in (data["fragmentation_clusters"] or []):
-        for sf in cl["source_files"]:
-            # договор может входить в несколько кластеров — берём самый подозрительный
-            if sf not in frag or cl["suspicion_score"] > frag[sf]["suspicion_score"]:
-                frag[sf] = cl
+def badge(level: str, text: str | None = None) -> str:
+    return (f"<span class='badge' style='background:{RISK_BG[level]};color:{RISK_FG[level]}'>"
+            f"{text or level}</span>")
 
+
+def kpi(label: str, value: str, sub: str = "", high: bool = False) -> str:
+    return (f"<div class='kpi{' high' if high else ''}'><div class='lbl'>{label}</div>"
+            f"<div class='val'>{value}</div><div class='sub'>{sub}</div></div>")
+
+
+def na(text: str = "данные недоступны") -> None:
+    st.markdown(f"<span class='na'>{text}</span>", unsafe_allow_html=True)
+
+
+# ---------------------------------------------------------------------------
+# Верх экрана: сводная панель, фильтры, таблица
+# ---------------------------------------------------------------------------
+
+def overview_frame(merged: list) -> pd.DataFrame:
     rows = []
-    for c in contracts:
-        sf = c["source_file"]
-        b, a, k, f = bench.get(sf), alts.get(sf), comp.get(sf), frag.get(sf)
-        price_risk = b["risk_level"] if b else "недостаточно данных"
-        comp_level = k["compliance_level"] if k else "недостаточно данных для проверки"
-        frag_level = f["suspicion_level"] if f else ""
-        score = (W_PRICE * PRICE_RISK_SCORE.get(price_risk, 0)
-                 + W_COMPLIANCE * COMPLIANCE_SCORE.get(comp_level, 0)
-                 + W_FRAGMENTATION * FRAG_SCORE.get(frag_level, 0))
-        overall = ("высокий риск" if score >= OVERALL_HIGH else
-                   "требует проверки" if score >= OVERALL_CHECK else "норма")
+    for m in merged:
+        c, b, a = m["contract"], m["benchmark"], m["alternatives"]
         rows.append({
-            "source_file": sf,
-            "Договор": c.get("contract_number") or sf,
-            "Заказчик": c.get("customer", ""),
-            "Поставщик": c.get("supplier", ""),
-            "Район": c.get("district", ""),
-            "Дата": c.get("contract_date", ""),
-            "Сумма, ₸": c.get("amount_kzt", 0) or 0,
-            "Категория": b["category"] if b else (a["service_category"] if a else ""),
-            "Откл. от медианы, %": b["price_deviation_pct"] if b else None,
-            "Ценовой риск": price_risk,
-            "Экономия, ₸": a["potential_savings_kzt"] if a else 0,
-            "Экономия, %": a["potential_savings_pct"] if a else 0.0,
-            "Соответствие ТЗ": comp_level,
-            "Балл ТЗ": k["consistency_score"] if k else None,
-            "Дробление": f"{f['cluster_id']} ({frag_level})" if f else "",
-            "Сводный балл": round(score),
-            "Сводный риск": overall,
-            "Уверенность извлечения": c.get("confidence", ""),
-            "Ошибка извлечения": c.get("error", ""),
+            "source_file": m["source_file"],
+            "Риск": m["risk_level"],
+            "Договор": c.get("contract_number") or m["source_file"],
+            "Поставщик": c.get("supplier") or "—",
+            "Заказчик": c.get("customer") or "—",
+            "Сумма, ₸": float(c.get("amount_kzt") or 0),
+            "Категория": (b or {}).get("category") or (a or {}).get("service_category") or "",
+            "Откл. от медианы, %": b.get("price_deviation_pct") if b else None,
+            "Экономия, ₸": float((a or {}).get("potential_savings_kzt") or 0),
+            "Сигналы": ", ".join(m["reasons"]) or "—",
+            "Дата": c.get("contract_date") or "",
+            "_order": RISK_ORDER[m["risk_level"]],
         })
     return pd.DataFrame(rows)
 
 
-def color_risk(val: str) -> str:
-    base = {"высокий": "#f8d7da", "требует": "#ffe5cc", "норма": "#d4edda", "соответствует": "#d4edda",
-            "средний": "#ffe5cc", "низкий": "#eef2f5"}
-    for key, color in base.items():
-        if isinstance(val, str) and val.startswith(key):
-            return f"background-color: {color}; color: #1f2933"
+def render_summary(df_all: pd.DataFrame, df_view: pd.DataFrame, data: dict):
+    total = df_all["Сумма, ₸"].sum()
+    high_amount = df_all.loc[df_all["Риск"] == RISK_HIGH, "Сумма, ₸"].sum()
+    n_high = int((df_all["Риск"] == RISK_HIGH).sum())
+    n_check = int((df_all["Риск"] == RISK_CHECK).sum())
+    savings = df_all["Экономия, ₸"].sum()
+    with_alt = int((df_all["Экономия, ₸"] > 0).sum())
+
+    c1, c2, c3, c4 = st.columns(4)
+    c1.markdown(kpi("Проверено договоров", str(len(df_all)),
+                    f"высокий риск: {n_high} · требует проверки: {n_check}"), unsafe_allow_html=True)
+    c2.markdown(kpi("Общая сумма", fmt_mln(total), f"{fmt_kzt(total)}"), unsafe_allow_html=True)
+    c3.markdown(kpi("Сумма договоров с высоким риском", fmt_mln(high_amount),
+                    f"{high_amount / total * 100:.0f}% от общей суммы" if total else "", high=n_high > 0),
+                unsafe_allow_html=True)
+    c4.markdown(kpi("Потенциальная экономия", fmt_mln(savings) if data["alternatives"] is not None else "—",
+                    (f"по {with_alt} договорам с альтернативами" if data["alternatives"] is not None
+                     else "Этап 2 не запущен")), unsafe_allow_html=True)
+
+
+def render_filters(df: pd.DataFrame) -> pd.DataFrame:
+    f1, f2, f3 = st.columns([1.1, 1.4, 1.5])
+    risk_sel = f1.multiselect("Уровень риска", RISK_LEVELS, default=RISK_LEVELS)
+    cats = sorted(x for x in df["Категория"].unique() if x)
+    cat_sel = f2.multiselect("Категория услуг", cats, placeholder="Все категории")
+    max_mln = max(1.0, float(df["Сумма, ₸"].max()) / 1_000_000)
+    lo, hi = f3.slider("Сумма договора, млн ₸", 0.0, float(round(max_mln + 0.5, 1)),
+                       (0.0, float(round(max_mln + 0.5, 1))), step=0.1)
+
+    view = df[df["Риск"].isin(risk_sel)]
+    if cat_sel:
+        view = view[view["Категория"].isin(cat_sel)]
+    view = view[(view["Сумма, ₸"] >= lo * 1_000_000) & (view["Сумма, ₸"] <= hi * 1_000_000)]
+    return view.sort_values(["_order", "Сумма, ₸"], ascending=[False, False]).reset_index(drop=True)
+
+
+def style_risk(val: str) -> str:
+    if val in RISK_FG:
+        return f"background-color: {RISK_BG[val]}; color: {RISK_FG[val]}; font-weight: 600"
     return ""
 
 
-# ---------------------------------------------------------------------------
-# Разделы
-# ---------------------------------------------------------------------------
-
-def section_summary(df: pd.DataFrame, data: dict, results_dir: Path):
-    st.subheader("Сводка")
-    total_amount = df["Сумма, ₸"].sum()
-    savings = df["Экономия, ₸"].sum()
-    n_high = int((df["Сводный риск"] == "высокий риск").sum())
-    n_check = int((df["Сводный риск"] == "требует проверки").sum())
-    n_frag = len(data["fragmentation_clusters"] or [])
-
-    c1, c2, c3, c4, c5 = st.columns(5)
-    c1.metric("Договоров", len(df))
-    c2.metric("Сумма, млн ₸", fmt_mln(total_amount))
-    c3.metric("Экономия, млн ₸", fmt_mln(savings),
-              f"{savings / total_amount * 100:.1f}% от суммы" if total_amount else None, delta_color="off")
-    c4.metric("Риск: высокий / проверка", f"{n_high} / {n_check}")
-    c5.metric("Дробление: кластеров", n_frag)
-
-    left, right = st.columns([1, 1])
-    with left:
-        st.caption("Распределение сводного риска")
-        counts = df["Сводный риск"].value_counts().reindex(
-            ["высокий риск", "требует проверки", "норма"], fill_value=0)
-        st.bar_chart(counts, color="#c0392b", horizontal=True)
-    with right:
-        st.caption("Сумма договоров по категориям, ₸")
-        by_cat = df[df["Категория"] != ""].groupby("Категория")["Сумма, ₸"].sum().sort_values()
-        if not by_cat.empty:
-            st.bar_chart(by_cat, color="#2c7fb8", horizontal=True)
-        else:
-            st.info("Категории появятся после Этапа 3 (price_benchmark.py).")
-
-    missing = [n for n, v in data.items() if v is None]
-    if missing:
-        st.warning("Не найдены файлы: " + ", ".join(f"`{m}.json`" for m in missing)
-                   + f" в `{results_dir}/`. Соответствующие разделы показаны частично.")
-
-
-def section_contracts(df: pd.DataFrame, data: dict):
-    st.subheader("Договоры")
-    f1, f2, f3 = st.columns(3)
-    risk_filter = f1.multiselect("Сводный риск", ["высокий риск", "требует проверки", "норма"],
-                                 default=["высокий риск", "требует проверки", "норма"])
-    cat_filter = f2.multiselect("Категория", sorted(x for x in df["Категория"].unique() if x))
-    dist_filter = f3.multiselect("Район", sorted(x for x in df["Район"].unique() if x))
-
-    view = df[df["Сводный риск"].isin(risk_filter)]
-    if cat_filter:
-        view = view[view["Категория"].isin(cat_filter)]
-    if dist_filter:
-        view = view[view["Район"].isin(dist_filter)]
-    view = view.sort_values("Сводный балл", ascending=False)
-
-    cols = ["Договор", "Заказчик", "Поставщик", "Сумма, ₸", "Категория", "Откл. от медианы, %",
-            "Ценовой риск", "Экономия, ₸", "Соответствие ТЗ", "Дробление", "Сводный балл", "Сводный риск"]
-    st.dataframe(
-        view[cols].style.map(color_risk, subset=["Ценовой риск", "Соответствие ТЗ", "Сводный риск"])
-        .format({"Сумма, ₸": "{:,.0f}", "Экономия, ₸": "{:,.0f}", "Откл. от медианы, %": "{:+.1f}"}),
-        width="stretch", hide_index=True, height=min(60 + 36 * len(view), 600),
-    )
-    st.caption(f"Сводный балл = {W_PRICE}·цена + {W_COMPLIANCE}·ТЗ + {W_FRAGMENTATION}·дробление; "
-               f"≥{OVERALL_HIGH} — высокий риск, ≥{OVERALL_CHECK} — требует проверки.")
-
-    # --- карточка договора ---
-    st.markdown("#### Карточка договора")
+def render_table(view: pd.DataFrame) -> str | None:
+    """Таблица договоров с выбором строки. Возвращает source_file выбранного (или первого) договора."""
+    st.markdown("<div class='legend'>Уровень риска:"
+                + "".join(f"<span class='sw' style='background:{RISK_FG[l]}'></span>{l}" for l in RISK_LEVELS)
+                + " &nbsp;·&nbsp; общий риск = максимум по цене, дроблению, ТЗ и целостности PDF."
+                  " Отметьте строку (маркер слева) или выберите договор в списке под таблицей — "
+                  "ниже откроются детали.</div>", unsafe_allow_html=True)
     if view.empty:
-        st.info("Нет договоров под выбранные фильтры.")
+        st.info("Под выбранные фильтры договоров нет.")
+        return None
+    cols = ["Риск", "Договор", "Поставщик", "Заказчик", "Сумма, ₸", "Категория",
+            "Откл. от медианы, %", "Экономия, ₸", "Сигналы", "Дата"]
+    styler = (view[cols].style.map(style_risk, subset=["Риск"])
+              .format({"Сумма, ₸": "{:,.0f}", "Экономия, ₸": "{:,.0f}", "Откл. от медианы, %": "{:+.1f}"},
+                      na_rep="—"))
+    event = st.dataframe(styler, hide_index=True, width="stretch", on_select="rerun",
+                         selection_mode="single-row", key="contracts_table",
+                         height=min(60 + 36 * len(view), 520),
+                         column_config={"Риск": st.column_config.TextColumn(width="medium"),
+                                        "Сигналы": st.column_config.TextColumn(width="medium")})
+    rows = event.selection.rows if event and event.selection else []
+    if rows and rows[0] < len(view):
+        return view.iloc[rows[0]]["source_file"]
+    # Строка не отмечена — запасной выбор списком (по умолчанию самый рискованный договор)
+    labels = {r["source_file"]: f"{r['Договор']} · {r['Поставщик']} · {fmt_kzt(r['Сумма, ₸'])} · {r['Риск']}"
+              for r in view.to_dict("records")}
+    return st.selectbox("Договор для детального разбора", list(labels), format_func=labels.get,
+                        label_visibility="collapsed")
+
+
+# ---------------------------------------------------------------------------
+# Детали договора
+# ---------------------------------------------------------------------------
+
+def price_chart(contract_price: float, median: float, level: str, cat_stats: dict | None,
+                category: str) -> go.Figure:
+    """Bar chart «цена договора / медиана категории» + диапазон рынка (если есть)."""
+    fig = go.Figure()
+    fig.add_bar(x=["Цена договора"], y=[contract_price], marker_color=RISK_FG[level],
+                text=[fmt_kzt(contract_price)], textposition="outside", width=0.5)
+    fig.add_bar(x=["Медиана категории"], y=[median], marker_color=C_SECONDARY,
+                text=[fmt_kzt(median)], textposition="outside", width=0.5)
+    stats = (cat_stats or {}).get(category)
+    if stats and stats.get("min_price") and stats.get("max_price"):
+        fig.add_hrect(y0=stats["min_price"], y1=stats["max_price"], fillcolor=C_LINE, opacity=0.35,
+                      line_width=0, annotation_text="диапазон рынка", annotation_position="top left",
+                      annotation_font_color=C_SECONDARY, annotation_font_size=11)
+    fig.update_layout(showlegend=False, height=300, margin=dict(l=10, r=10, t=30, b=10),
+                      paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+                      font=dict(family=FONT, color="#1B2430", size=12), bargap=0.35,
+                      yaxis=dict(title="₸", gridcolor=C_LINE, zeroline=False, tickformat=",.0f",
+                                 range=[0, max(contract_price, median) * 1.25]),
+                      xaxis=dict(showgrid=False))
+    return fig
+
+
+def block_price(m: dict, data: dict):
+    st.markdown("<div class='card-title'>Цена vs рыночная медиана</div>", unsafe_allow_html=True)
+    b, c = m["benchmark"], m["contract"]
+    if data["price_benchmark"] is None:
+        na("данные недоступны — Этап 3 (price_benchmark.py) не запущен")
         return
-    options = view["source_file"].tolist()
-    labels = {sf: f"{row['Договор']} — {row['Поставщик']} — {fmt_kzt(row['Сумма, ₸'])}"
-              for sf, row in zip(view["source_file"], view.to_dict("records"))}
-    chosen = st.selectbox("Выберите договор", options, format_func=lambda sf: labels[sf])
-    contract_card(chosen, data)
-
-
-def contract_card(sf: str, data: dict):
-    contract = next((c for c in (data["contracts"] or []) if c["source_file"] == sf), None)
-    bench = next((r for r in (data["price_benchmark"] or []) if r["source_file"] == sf), None)
-    alt = next((r for r in (data["alternatives"] or []) if r["source_file"] == sf), None)
-    comp = next((r for r in (data["tor_compliance"] or []) if r["source_file"] == sf), None)
-    clusters = [cl for cl in (data["fragmentation_clusters"] or []) if sf in cl["source_files"]]
-    if not contract:
+    if not b or b.get("risk_level") not in RISK_FG:
+        na((b or {}).get("benchmark_note") or "недостаточно данных для сравнения")
         return
+    st.markdown(badge(b["risk_level"]) + f" &nbsp;<span class='muted'>категория: {b['category'] or '—'} · "
+                f"выборка {b['sample_size']} цен</span>", unsafe_allow_html=True)
+    st.plotly_chart(price_chart(float(c.get("amount_kzt") or 0), float(b["category_median_price"]),
+                                b["risk_level"], data["category_stats"], b["category"]),
+                    width="stretch", config={"displayModeBar": False})
+    st.markdown(f"Отклонение от медианы: **{b['price_deviation_pct']:+.1f}%** (×{b['price_ratio']})"
+                + (f"<br><span class='muted'>{b['benchmark_note']}</span>" if b.get("benchmark_note") else "")
+                + (f"<br><span class='muted'>{b['district_context']}</span>" if b.get("district_context") else ""),
+                unsafe_allow_html=True)
 
-    a, b = st.columns([1, 1])
-    with a:
-        st.markdown(f"**Файл:** `{sf}`  \n**Договор:** {contract.get('contract_number') or '—'}  \n"
-                    f"**Лот:** {contract.get('lot_number') or '—'}  \n**Дата:** {contract.get('contract_date') or '—'}  \n"
-                    f"**Заказчик:** {contract.get('customer') or '—'}  \n**Поставщик:** {contract.get('supplier') or '—'}  \n"
-                    f"**Район:** {contract.get('district') or '—'}  \n**Сумма:** {fmt_kzt(contract.get('amount_kzt'))}  \n"
-                    f"**Уверенность извлечения:** {contract.get('confidence') or '—'}")
-        st.markdown(f"**Предмет закупки:** {contract.get('service_text') or '—'}")
-        if contract.get("tech_stack_mentioned"):
-            st.markdown(f"**Технологии:** {contract['tech_stack_mentioned']}")
-        if contract.get("error"):
-            st.error(f"Ошибка извлечения: {contract['error']}")
-    with b:
-        if bench:
-            color = RISK_COLORS.get(bench["risk_level"], "#7f8c8d")
-            st.markdown(f"**Ценовой бенчмаркинг** — "
-                        f"<span style='color:{color};font-weight:600'>{bench['risk_level']}</span>",
+
+def block_alternatives(m: dict, data: dict):
+    st.markdown("<div class='card-title'>Альтернативные поставщики</div>", unsafe_allow_html=True)
+    a = m["alternatives"]
+    if data["alternatives"] is None:
+        na("данные недоступны — Этап 2 (find_alternatives.py) не запущен")
+        return
+    if not a:
+        na("для этого договора альтернативы не рассчитаны")
+        return
+    if not a.get("alternatives"):
+        na(a.get("note") or "более дешёвых релевантных предложений не найдено")
+        return
+    best = a["best_alternative"]
+    st.markdown(f"Потенциальная экономия: <b style='color:{RISK_FG[RISK_OK]}'>{fmt_kzt(a['potential_savings_kzt'])} "
+                f"({a['potential_savings_pct']:.1f}%)</b> &nbsp;<span class='muted'>лучшее предложение — "
+                f"{best['company']}, {best.get('city') or '—'}</span>", unsafe_allow_html=True)
+    adf = pd.DataFrame(a["alternatives"])[["company", "city", "price_kzt", "price_diff_pct", "relevance_reason"]]
+    adf.columns = ["Компания", "Город", "Цена, ₸", "Дешевле на, %", "Почему релевантно"]
+    st.dataframe(adf.style.format({"Цена, ₸": "{:,.0f}", "Дешевле на, %": "{:.1f}"}),
+                 hide_index=True, width="stretch", height=min(60 + 36 * len(adf), 260))
+    src = "синтетический рынок (компании вымышлены, для демо)" if a.get("market_source") == "synthetic" \
+        else a.get("market_source") or "—"
+    st.markdown(f"<span class='muted'>Источник: {src} · проверено кандидатов: {a.get('candidates_checked', 0)}</span>",
+                unsafe_allow_html=True)
+
+
+def block_fragmentation(m: dict, data: dict):
+    st.markdown("<div class='card-title'>Дробление закупок</div>", unsafe_allow_html=True)
+    cl = m["cluster"]
+    if data["fragmentation_clusters"] is None:
+        na("данные недоступны — Этап 4 (compliance_and_fragmentation.py) не запущен")
+        return
+    if not cl:
+        st.markdown(badge(RISK_OK, "не входит в кластеры"), unsafe_allow_html=True)
+        return
+    level = frag_component(cl)
+    st.markdown(badge(level, f"кластер {cl['cluster_id']} · балл {cl['suspicion_score']}/100")
+                + f" &nbsp;<span class='muted'>похожесть {cl['avg_similarity']} · интервал {cl['date_span_days']} дн. · "
+                f"суммарно {fmt_kzt(cl['total_amount_kzt'])}</span>", unsafe_allow_html=True)
+    st.markdown(f"<div class='flag {'high' if level == RISK_HIGH else 'check'}'>{cl['explanation']}</div>",
+                unsafe_allow_html=True)
+    others = [x for x in cl["contracts"] if x["source_file"] != m["source_file"]]
+    if others:
+        odf = pd.DataFrame(others)[["contract_id", "contract_date", "supplier", "amount_kzt", "service_text"]]
+        odf.columns = ["Договор", "Дата", "Поставщик", "Сумма, ₸", "Предмет"]
+        st.markdown("<span class='muted'>Остальные договоры кластера:</span>", unsafe_allow_html=True)
+        st.dataframe(odf.style.format({"Сумма, ₸": "{:,.0f}"}), hide_index=True, width="stretch",
+                     height=min(60 + 36 * len(odf), 200))
+
+
+def block_tor(m: dict, data: dict):
+    st.markdown("<div class='card-title'>Соответствие техническому заданию</div>", unsafe_allow_html=True)
+    k = m["compliance"]
+    if data["tor_compliance"] is None:
+        na("данные недоступны — Этап 4 (compliance_and_fragmentation.py) не запущен")
+        return
+    if not k:
+        na("проверка для этого договора не выполнялась")
+        return
+    if k.get("consistency_score") is None:
+        na(k.get("explanation") or "недостаточно данных для проверки")
+        return
+    level = tor_component(k)
+    st.markdown(badge(level, f"{k['compliance_level']} · {k['consistency_score']}/100"), unsafe_allow_html=True)
+    st.markdown(f"<span class='muted'>Заявлено в ТЗ: {k.get('tech_stack_mentioned') or '—'}</span>",
+                unsafe_allow_html=True)
+    st.markdown(k.get("explanation") or "")
+    if k.get("flagged_phrases"):
+        st.markdown("Спорные формулировки: " + " ".join(
+            f"<span class='badge' style='background:#F3F5F8;color:{C_PRIMARY};font-weight:500'>«{p}»</span>"
+            for p in k["flagged_phrases"]), unsafe_allow_html=True)
+
+
+def block_integrity(m: dict, data: dict):
+    st.markdown("<div class='card-title'>Целостность PDF-документа</div>", unsafe_allow_html=True)
+    r = m["integrity"]
+    if data["integrity_check"] is None:
+        na("данные недоступны — Этап 5А (integrity_check.py) не запущен")
+        return
+    if not r:
+        na("файл не проверялся")
+        return
+    if r.get("error"):
+        st.markdown(badge(RISK_CHECK, "файл не удалось прочитать"), unsafe_allow_html=True)
+        st.markdown(f"<span class='muted'>{r['error']}</span>", unsafe_allow_html=True)
+        return
+    level = integrity_component(r)
+    st.markdown(badge(level, f"{r['integrity_level']} · {r['integrity_score']}/100"), unsafe_allow_html=True)
+    st.markdown(f"<span class='muted'>Создан: {(r.get('creation_date') or '—')[:10]} · изменён: "
+                f"{(r.get('mod_date') or '—')[:10]} · ПО: {r.get('producer') or r.get('creator') or '—'} · "
+                f"стр.: {r.get('pages', '—')}</span>", unsafe_allow_html=True)
+    if not r.get("flags"):
+        st.markdown(r.get("note") or "", unsafe_allow_html=True)
+    for flag in r["flags"]:
+        st.markdown(f"<div class='flag {'high' if level == RISK_HIGH else 'check'}'><b>{flag}</b> — "
+                    f"{r['flag_details'].get(flag, '')}</div>", unsafe_allow_html=True)
+
+
+def render_details(m: dict, data: dict):
+    c = m["contract"]
+    st.markdown("---")
+    head_l, head_r = st.columns([3, 1])
+    with head_l:
+        st.markdown(f"<div class='hdr-title' style='font-size:1.3rem'>{c.get('contract_number') or m['source_file']}"
+                    f" &nbsp;{badge(m['risk_level'])}</div>"
+                    f"<div class='hdr-sub'>{c.get('supplier') or '—'} → {c.get('customer') or '—'}"
+                    f" · {c.get('contract_date') or '—'} · {c.get('district') or '—'} · файл {m['source_file']}</div>",
+                    unsafe_allow_html=True)
+    with head_r:
+        st.markdown(f"<div class='kpi' style='min-height:0;padding:10px 14px'><div class='lbl'>Сумма договора</div>"
+                    f"<div class='val' style='font-size:1.3rem'>{fmt_kzt(c.get('amount_kzt'))}</div></div>",
+                    unsafe_allow_html=True)
+    st.markdown(f"**Предмет закупки.** {c.get('service_text') or '—'}"
+                + (f"  \n<span class='muted'>Технологии: {c['tech_stack_mentioned']}</span>"
+                   if c.get("tech_stack_mentioned") else "")
+                + (f"  \n<span class='muted'>Уверенность извлечения (Этап 1): {c['confidence']}</span>"
+                   if c.get("confidence") else ""), unsafe_allow_html=True)
+    if c.get("error"):
+        st.warning(f"Этап 1 завершился с ошибкой для этого файла: {c['error']}")
+
+    # Компоненты риска одной строкой — видно, что именно «подсветило» договор
+    comp = m["components"]
+    st.markdown(" ".join(badge(comp[k], f"{label}: {comp[k]}") for k, label in
+                         (("price", "цена"), ("fragmentation", "дробление"), ("tor", "ТЗ"), ("integrity", "PDF"))),
+                unsafe_allow_html=True)
+
+    r1a, r1b = st.columns([1, 1])
+    with r1a, st.container(border=True):
+        block_price(m, data)
+    with r1b, st.container(border=True):
+        block_alternatives(m, data)
+    r2a, r2b, r2c = st.columns([1.2, 1, 1])
+    with r2a, st.container(border=True):
+        block_fragmentation(m, data)
+    with r2b, st.container(border=True):
+        block_tor(m, data)
+    with r2c, st.container(border=True):
+        block_integrity(m, data)
+
+
+# ---------------------------------------------------------------------------
+# Боковая панель
+# ---------------------------------------------------------------------------
+
+STAGES = [("contracts", "1. Извлечение данных из PDF"), ("alternatives", "2. Альтернативные поставщики"),
+          ("price_benchmark", "3. Ценовой бенчмаркинг"), ("tor_compliance", "4А. Соответствие ТЗ"),
+          ("fragmentation_clusters", "4Б. Дробление закупок"), ("integrity_check", "5А. Целостность PDF")]
+
+
+def run_pipeline(pdf_path: Path, api_key: str):
+    """Запускает все 5 этапов пайплайна."""
+    base_dir = pdf_path.parent.parent
+    contracts_dir = base_dir / "contracts"
+    results_dir = base_dir / "results"
+    
+    results_dir.mkdir(parents=True, exist_ok=True)
+    
+    env = os.environ.copy()
+    
+    # Читаем ключ из .env, если он существует
+    env_file = base_dir / ".env"
+    if env_file.exists():
+        with open(env_file, "r") as f:
+            for line in f:
+                if "=" in line and not line.strip().startswith("#"):
+                    k, v = line.strip().split("=", 1)
+                    if k.strip() == "GEMINI_API_KEY":
+                        env["GEMINI_API_KEY"] = v.strip()
+                        
+    if api_key:
+        env["GEMINI_API_KEY"] = api_key
+        
+    python_exe = sys.executable
+
+    def run_step(cmd, desc):
+        st.write(f"⏳ {desc}...")
+        res = subprocess.run(cmd, env=env, capture_output=True, text=True)
+        if res.returncode != 0:
+            st.error(f"Ошибка в {desc}:\n{res.stderr}")
+            return False
+        return True
+
+    with st.status("Выполнение аудита...", expanded=True) as status:
+        if not run_step([python_exe, "extract_stage1.py", "--input", str(contracts_dir), "--output", str(results_dir / "contracts.json")], "Этап 1: Извлечение данных (AI)"):
+            status.update(label="Ошибка на Этапе 1", state="error")
+            return False
+            
+        if not run_step([python_exe, "find_alternatives.py", "--input", str(results_dir / "contracts.json"), "--output", str(results_dir / "alternatives.json"), "--mode", "synthetic"], "Этап 2: Поиск альтернатив"):
+            status.update(label="Ошибка на Этапе 2", state="error")
+            return False
+            
+        if not run_step([python_exe, "price_benchmark.py", "--contracts", str(results_dir / "contracts.json"), "--market", "market_database.json", "--output", str(results_dir / "price_benchmark.json")], "Этап 3: Ценовой бенчмаркинг"):
+            status.update(label="Ошибка на Этапе 3", state="error")
+            return False
+            
+        if not run_step([python_exe, "compliance_and_fragmentation.py", "--input", str(results_dir / "contracts.json"), "--output-dir", str(results_dir)], "Этап 4: Проверка ТЗ и дробления"):
+            status.update(label="Ошибка на Этапе 4", state="error")
+            return False
+            
+        if not run_step([python_exe, "integrity_check.py", "--input", str(contracts_dir), "--output", str(results_dir / "integrity_check.json")], "Этап 5: Целостность PDF"):
+            status.update(label="Ошибка на Этапе 5", state="error")
+            return False
+            
+        status.update(label="Аудит успешно завершён!", state="complete")
+        return True
+
+
+def render_sidebar(data: dict, results_dir: Path):
+    st.sidebar.markdown(f"<div class='card-title'>Новый аудит</div>", unsafe_allow_html=True)
+    uploaded_file = st.sidebar.file_uploader("Загрузить договор (PDF)", type=["pdf"])
+    if st.sidebar.button("Запустить аудит", disabled=not uploaded_file, type="primary", use_container_width=True):
+        user_dir = Path("./user_data")
+        contracts_dir = user_dir / "contracts"
+        res_dir = user_dir / "results"
+        
+        # Очищаем старые данные
+        if user_dir.exists():
+            shutil.rmtree(user_dir, ignore_errors=True)
+        contracts_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Сохраняем файл
+        pdf_path = contracts_dir / uploaded_file.name
+        with open(pdf_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+            
+        # Запускаем пайплайн
+        if run_pipeline(pdf_path, ""):
+            st.session_state["results_dir"] = res_dir
+            _read_json.clear()
+            st.rerun()
+
+    st.sidebar.markdown("---")
+
+    st.sidebar.markdown(f"<div class='card-title'>Статус pipeline</div>"
+                        f"<div class='muted'>папка результатов: {results_dir}/</div>", unsafe_allow_html=True)
+    for key, label in STAGES:
+        ok = data[key] is not None
+        st.sidebar.markdown(f"<div style='margin:4px 0'><span class='sw' style='display:inline-block;width:8px;"
+                            f"height:8px;border-radius:50%;margin-right:8px;background:"
+                            f"{RISK_FG[RISK_OK] if ok else C_MUTED}'></span>{label}"
+                            f"<span class='muted'> — {'готово' if ok else 'нет данных'}</span></div>",
+                            unsafe_allow_html=True)
+    if st.sidebar.button("Обновить данные", width="stretch"):
+        _read_json.clear()
+        st.rerun()
+    with st.sidebar.expander("Методика оценки риска"):
+        st.markdown(f"""
+Общий уровень риска договора — **максимум** из четырёх независимых сигналов:
+
+- **Цена** (Этап 3): отклонение от медианы категории; пороги задаются в `price_benchmark.py`.
+- **Дробление** (Этап 4Б): балл кластера ≥ {FRAG_SUSPICION_HIGH} — высокий, ≥ {FRAG_SUSPICION_CHECK} — проверка.
+- **ТЗ** (Этап 4А): соответствие продукта заявленным технологиям < {TOR_HIGH_BELOW} — высокий, < {TOR_CHECK_BELOW} — проверка.
+- **PDF** (Этап 5А): integrity_score < {INTEGRITY_HIGH_BELOW} — высокий, < {INTEGRITY_CHECK_BELOW} — проверка.
+
+Отсутствие данных по этапу не повышает риск. Все оценки — индикаторы для проверки
+аудитором, а не выводы о нарушениях.
+""")
+    st.sidebar.markdown("<div class='muted' style='margin-top:12px'>Hackathon Korkyt · AI-аудит госзакупок РК</div>",
                         unsafe_allow_html=True)
-            st.markdown(f"Категория: *{bench['category'] or '—'}*  \n"
-                        f"Медиана категории: {fmt_kzt(bench['category_median_price'])} "
-                        f"(выборка {bench['sample_size']})  \n"
-                        f"Отклонение: **{bench['price_deviation_pct']:+.1f}%** "
-                        f"(×{bench['price_ratio']})")
-            if bench.get("benchmark_note"):
-                st.caption(bench["benchmark_note"])
-            if bench.get("district_context"):
-                st.caption(bench["district_context"])
-        else:
-            st.info("Нет данных Этапа 3 по этому договору.")
-
-        if comp:
-            color = {"соответствует": "#27ae60", "требует проверки": "#e67e22",
-                     "высокий риск несоответствия": "#c0392b"}.get(comp["compliance_level"], "#7f8c8d")
-            score = comp["consistency_score"]
-            st.markdown(f"**Соответствие ТЗ** — <span style='color:{color};font-weight:600'>"
-                        f"{comp['compliance_level']}</span>"
-                        + (f" ({score}/100)" if score is not None else ""), unsafe_allow_html=True)
-            st.markdown(comp.get("explanation") or "")
-            if comp.get("flagged_phrases"):
-                st.markdown("Спорные формулировки: " + ", ".join(f"«{p}»" for p in comp["flagged_phrases"]))
-        else:
-            st.info("Нет данных Этапа 4 (модуль А) по этому договору.")
-
-    if alt:
-        st.markdown(f"**Альтернативные предложения** (рынок: {alt.get('market_source') or '—'}, "
-                    f"проверено кандидатов: {alt.get('candidates_checked', 0)})")
-        if alt["alternatives"]:
-            st.markdown(f"Потенциальная экономия: **{fmt_kzt(alt['potential_savings_kzt'])} "
-                        f"({alt['potential_savings_pct']:.1f}%)** — лучшая альтернатива "
-                        f"{alt['best_alternative']['company']}")
-            adf = pd.DataFrame(alt["alternatives"]).rename(columns={
-                "company": "Компания", "city": "Город", "price_kzt": "Цена, ₸", "price_diff_pct": "Дешевле на, %",
-                "relevance_reason": "Почему релевантно", "offer": "Предложение"})
-            st.dataframe(adf.style.format({"Цена, ₸": "{:,.0f}", "Дешевле на, %": "{:.1f}"}),
-                         width="stretch", hide_index=True)
-        else:
-            st.caption(alt.get("note") or "Более дешёвых альтернатив не найдено.")
-        if alt.get("market_source") == "synthetic":
-            st.caption("⚠ Рынок синтетический: компании вымышлены и сгенерированы для демо.")
-
-    for cl in clusters:
-        st.markdown(f"**Кластер дробления {cl['cluster_id']}** — уровень *{cl['suspicion_level']}* "
-                    f"(балл {cl['suspicion_score']}): {cl['explanation']}")
-
-
-def section_benchmark(df: pd.DataFrame, data: dict):
-    st.subheader("Ценовой бенчмаркинг по категориям")
-    stats = data["category_stats"]
-    bench = data["price_benchmark"]
-    if not stats or not bench:
-        st.info("Запустите Этап 3: `price_benchmark.py` → `price_benchmark.json`, `category_stats.json`.")
-        return
-
-    rows = [{"Категория": name, "Описание": s["description"], "Договоров": s["contracts_count"],
-             "Медиана, ₸": s["median_price"], "Мин, ₸": s["min_price"], "Макс, ₸": s["max_price"],
-             "Выборка": s["sample_size"], "Высокий риск": s["risk_counts"].get("высокий риск", 0),
-             "Требует проверки": s["risk_counts"].get("требует проверки", 0),
-             "Норма": s["risk_counts"].get("норма", 0)} for name, s in stats.items()]
-    st.dataframe(pd.DataFrame(rows).style.format({"Медиана, ₸": "{:,.0f}", "Мин, ₸": "{:,.0f}",
-                                                    "Макс, ₸": "{:,.0f}"}),
-                 width="stretch", hide_index=True)
-
-    st.caption("Отклонение цены каждого договора от медианы своей категории, %")
-    bdf = pd.DataFrame(bench)
-    bdf = bdf[bdf["risk_level"] != "недостаточно данных"].copy()
-    if bdf.empty:
-        st.info("Нет оценённых договоров.")
-        return
-    bdf["label"] = bdf["contract_id"].astype(str) + " · " + bdf["supplier"].astype(str).str[:28]
-    chart = bdf.set_index("label")[["price_deviation_pct"]].rename(
-        columns={"price_deviation_pct": "Отклонение, %"}).sort_values("Отклонение, %")
-    st.bar_chart(chart, horizontal=True, color="#e67e22")
-
-    districts = bdf[bdf["district_context"] != ""].drop_duplicates("district_key")["district_context"].tolist()
-    if districts:
-        st.markdown("**Контекст по районам**")
-        for line in districts:
-            st.markdown(f"- {line}")
-
-
-def section_fragmentation(data: dict):
-    st.subheader("Признаки дробления закупок")
-    clusters = data["fragmentation_clusters"]
-    if clusters is None:
-        st.info("Запустите Этап 4: `compliance_and_fragmentation.py` → `fragmentation_clusters.json`.")
-        return
-    if not clusters:
-        st.success("Кластеров с признаками дробления не найдено.")
-        return
-    for cl in sorted(clusters, key=lambda c: -c["suspicion_score"]):
-        color = {"высокий": "#c0392b", "средний": "#e67e22", "низкий": "#7f8c8d"}[cl["suspicion_level"]]
-        with st.expander(f"{cl['cluster_id']} · {cl['customer']} · {cl['contracts_count']} договора на "
-                         f"{fmt_kzt(cl['total_amount_kzt'])} · балл {cl['suspicion_score']} ({cl['suspicion_level']})",
-                         expanded=cl["suspicion_level"] == "высокий"):
-            st.markdown(f"<span style='color:{color};font-weight:600'>Уровень: {cl['suspicion_level']}</span>  \n"
-                        f"Похожесть текстов: {cl['avg_similarity']} · интервал дат: {cl['date_span_days']} дн. · "
-                        f"каждый ниже порога {fmt_kzt(cl['threshold_kzt'])}: "
-                        f"{'да' if cl['each_below_threshold'] else 'нет'}", unsafe_allow_html=True)
-            st.markdown(cl["explanation"])
-            cdf = pd.DataFrame(cl["contracts"]).rename(columns={
-                "contract_id": "Договор", "contract_date": "Дата", "supplier": "Поставщик",
-                "amount_kzt": "Сумма, ₸", "service_text": "Предмет", "source_file": "Файл"})
-            st.dataframe(cdf[["Договор", "Дата", "Поставщик", "Сумма, ₸", "Предмет", "Файл"]]
-                         .style.format({"Сумма, ₸": "{:,.0f}"}), width="stretch", hide_index=True)
-
-
-def section_compliance(data: dict):
-    st.subheader("Соответствие продукта техническому заданию")
-    comp = data["tor_compliance"]
-    if comp is None:
-        st.info("Запустите Этап 4: `compliance_and_fragmentation.py` → `tor_compliance.json`.")
-        return
-    cdf = pd.DataFrame(comp)
-    counts = cdf["compliance_level"].value_counts()
-    st.caption("  ·  ".join(f"{k}: {v}" for k, v in counts.items()))
-    view = cdf.rename(columns={"contract_id": "Договор", "supplier": "Поставщик",
-                               "tech_stack_mentioned": "Заявлено в ТЗ", "consistency_score": "Балл",
-                               "compliance_level": "Уровень", "explanation": "Пояснение"})
-    view = view.sort_values("Балл", na_position="last")
-    st.dataframe(view[["Договор", "Поставщик", "Заявлено в ТЗ", "Балл", "Уровень", "Пояснение"]]
-                 .style.map(color_risk, subset=["Уровень"]), width="stretch", hide_index=True)
 
 
 # ---------------------------------------------------------------------------
@@ -382,40 +628,35 @@ def section_compliance(data: dict):
 # ---------------------------------------------------------------------------
 
 def main():
-    st.set_page_config(page_title="Аудит госзакупок РК", page_icon="🔎", layout="wide")
-    results_dir = parse_results_dir()
-    data = load_all(results_dir)
+    st.set_page_config(page_title="Аудит госзакупок РК", layout="wide", initial_sidebar_state="expanded")
+    st.markdown(CSS, unsafe_allow_html=True)
 
-    st.title("AI-аудит государственных закупок")
-    st.caption("Индикаторы риска для проверки аудитором — не юридический вердикт. "
-               f"Источник данных: `{results_dir}/`"
-               + ("  ·  **ДЕМО-ДАННЫЕ (вымышленные)**" if "demo" in str(results_dir) else ""))
+    results_dir = parse_results_dir()
+    data = load_all_data(results_dir)
+    render_sidebar(data, results_dir)
+
+    is_demo = "demo" in str(results_dir).lower()
+    st.markdown("<div class='hdr-title'>Аудит государственных закупок</div>"
+                "<div class='hdr-sub'>Автоматическая проверка договоров: цена, альтернативы, дробление, "
+                "соответствие ТЗ, целостность документов. Результат — индикаторы риска для аудитора."
+                + (" <b>Демонстрационные данные: все договоры и компании вымышлены.</b>" if is_demo else "")
+                + "</div>", unsafe_allow_html=True)
 
     if not data["contracts"]:
-        st.error(f"Не найден `{results_dir}/contracts.json`. Запустите Этап 1 (`extract_stage1.py`) "
-                 "или сгенерируйте демо: `python demo_data.py --output-dir ./demo_results`.")
+        st.error(f"Не найден `{results_dir}/contracts.json` — без результата Этапа 1 показывать нечего. "
+                 "Запустите `extract_stage1.py` или сгенерируйте демо: `python demo_data.py`.")
         st.stop()
 
-    if st.sidebar.button("Обновить данные"):
-        load_json.clear()
-        st.rerun()
-    st.sidebar.markdown("**Этапы pipeline**")
-    for n, label in [("contracts", "1. Извлечение из PDF"), ("alternatives", "2. Альтернативы"),
-                     ("price_benchmark", "3. Бенчмаркинг"), ("tor_compliance", "4А. Соответствие ТЗ"),
-                     ("fragmentation_clusters", "4Б. Дробление")]:
-        st.sidebar.markdown(("✅ " if data[n] is not None else "⬜ ") + label)
+    df_all = overview_frame(data["merged"])
+    st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
+    view = render_filters(df_all)
+    render_summary(df_all, view, data)
+    st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
 
-    df = build_overview(data)
-    section_summary(df, data, results_dir)
-    tabs = st.tabs(["Договоры", "Бенчмаркинг", "Дробление", "Соответствие ТЗ"])
-    with tabs[0]:
-        section_contracts(df, data)
-    with tabs[1]:
-        section_benchmark(df, data)
-    with tabs[2]:
-        section_fragmentation(data)
-    with tabs[3]:
-        section_compliance(data)
+    selected = render_table(view)
+    if selected:
+        m = next(x for x in data["merged"] if x["source_file"] == selected)
+        render_details(m, data)
 
 
 main()

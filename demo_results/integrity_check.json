@@ -1,0 +1,230 @@
+[
+  {
+    "source_file": "dogovor_001.pdf",
+    "creation_date": "2026-03-12T04:00:00+00:00",
+    "mod_date": "2026-03-12T09:30:00+00:00",
+    "producer": "Canon iR-ADV C5535 PDF",
+    "creator": "Canon Scan Utility",
+    "author": "demo",
+    "pages": 1,
+    "eof_markers": 1,
+    "flags": [],
+    "flag_details": {},
+    "integrity_score": 100,
+    "integrity_level": "признаков не обнаружено",
+    "note": "Технических признаков редактирования после создания не обнаружено.",
+    "error": ""
+  },
+  {
+    "source_file": "dogovor_002.pdf",
+    "creation_date": "2026-02-03T04:00:00+00:00",
+    "mod_date": "2026-02-03T09:30:00+00:00",
+    "producer": "Microsoft® Word 2019",
+    "creator": "Microsoft® Word 2019",
+    "author": "demo",
+    "pages": 1,
+    "eof_markers": 1,
+    "flags": [
+      "editor_producer"
+    ],
+    "flag_details": {
+      "editor_producer": "ПО создания/обработки — «Microsoft® Word 2019» (маркер «microsoft® word»): документ сформирован или пересохранён в редакторе, а не получен со сканера."
+    },
+    "integrity_score": 75,
+    "integrity_level": "требует проверки оригинала",
+    "note": "Обнаружены технические признаки, требующие проверки оригинала документа.",
+    "error": ""
+  },
+  {
+    "source_file": "dogovor_003.pdf",
+    "creation_date": "2026-04-20T04:00:00+00:00",
+    "mod_date": "2026-07-02T09:30:00+00:00",
+    "producer": "Adobe Acrobat Pro DC 23.1",
+    "creator": "Adobe Acrobat Pro DC",
+    "author": "demo",
+    "pages": 1,
+    "eof_markers": 2,
+    "flags": [
+      "modified_after_creation",
+      "editor_producer",
+      "incremental_update"
+    ],
+    "flag_details": {
+      "modified_after_creation": "дата изменения (2026-07-02) позже даты создания (2026-04-20) на 73 дн. при пороге 1 дн.",
+      "editor_producer": "ПО создания/обработки — «Adobe Acrobat Pro DC 23.1» (маркер «acrobat pro»): документ сформирован или пересохранён в редакторе, а не получен со сканера.",
+      "incremental_update": "в файле 2 секции %%EOF — файл сохранялся поверх исходной версии 1 раз(а) (так выглядят правки, аннотации или добавленные страницы поверх готового PDF)."
+    },
+    "integrity_score": 15,
+    "integrity_level": "высокий риск: требует проверки оригинала",
+    "note": "Обнаружены технические признаки, требующие проверки оригинала документа.",
+    "error": ""
+  },
+  {
+    "source_file": "dogovor_004.pdf",
+    "creation_date": "2026-01-28T04:00:00+00:00",
+    "mod_date": "2026-01-28T09:30:00+00:00",
+    "producer": "ABBYY FineReader 15",
+    "creator": "ScanSnap Manager",
+    "author": "demo",
+    "pages": 1,
+    "eof_markers": 1,
+    "flags": [
+      "text_layer_mismatch"
+    ],
+    "flag_details": {
+      "text_layer_mismatch": "на 1 из 1 стр. одновременно есть растровое изображение и текстовый слой. Это может быть обычный OCR-слой, но может и наложенный текст — эвристика, не доказательство."
+    },
+    "integrity_score": 85,
+    "integrity_level": "признаков не обнаружено",
+    "note": "Обнаружены технические признаки, требующие проверки оригинала документа.",
+    "error": ""
+  },
+  {
+    "source_file": "dogovor_005.pdf",
+    "creation_date": "2026-02-17T04:00:00+00:00",
+    "mod_date": "2026-02-17T09:30:00+00:00",
+    "producer": "Xerox WorkCentre 7845",
+    "creator": "Xerox Scan",
+    "author": "demo",
+    "pages": 1,
+    "eof_markers": 1,
+    "flags": [],
+    "flag_details": {},
+    "integrity_score": 100,
+    "integrity_level": "признаков не обнаружено",
+    "note": "Технических признаков редактирования после создания не обнаружено.",
+    "error": ""
+  },
+  {
+    "source_file": "dogovor_006.pdf",
+    "creation_date": "2026-03-30T04:00:00+00:00",
+    "mod_date": "2026-03-30T09:30:00+00:00",
+    "producer": "LibreOffice 7.6",
+    "creator": "Writer",
+    "author": "demo",
+    "pages": 1,
+    "eof_markers": 1,
+    "flags": [
+      "editor_producer"
+    ],
+    "flag_details": {
+      "editor_producer": "ПО создания/обработки — «LibreOffice 7.6» (маркер «libreoffice»): документ сформирован или пересохранён в редакторе, а не получен со сканера."
+    },
+    "integrity_score": 75,
+    "integrity_level": "требует проверки оригинала",
+    "note": "Обнаружены технические признаки, требующие проверки оригинала документа.",
+    "error": ""
+  },
+  {
+    "source_file": "dogovor_007.pdf",
+    "creation_date": "2026-03-02T04:00:00+00:00",
+    "mod_date": "2026-03-02T09:30:00+00:00",
+    "producer": "Microsoft® Word для Microsoft 365",
+    "creator": "Microsoft® Word",
+    "author": "demo",
+    "pages": 1,
+    "eof_markers": 1,
+    "flags": [
+      "editor_producer"
+    ],
+    "flag_details": {
+      "editor_producer": "ПО создания/обработки — «Microsoft® Word для Microsoft 365» (маркер «microsoft® word»): документ сформирован или пересохранён в редакторе, а не получен со сканера."
+    },
+    "integrity_score": 75,
+    "integrity_level": "требует проверки оригинала",
+    "note": "Обнаружены технические признаки, требующие проверки оригинала документа.",
+    "error": ""
+  },
+  {
+    "source_file": "dogovor_008.pdf",
+    "creation_date": "2026-05-11T04:00:00+00:00",
+    "mod_date": "2026-05-11T09:30:00+00:00",
+    "producer": "Kyocera TASKalfa 3253ci",
+    "creator": "Kyocera Scan",
+    "author": "demo",
+    "pages": 1,
+    "eof_markers": 1,
+    "flags": [],
+    "flag_details": {},
+    "integrity_score": 100,
+    "integrity_level": "признаков не обнаружено",
+    "note": "Технических признаков редактирования после создания не обнаружено.",
+    "error": ""
+  },
+  {
+    "source_file": "dogovor_009.pdf",
+    "creation_date": "2026-06-05T04:00:00+00:00",
+    "mod_date": "2026-06-05T09:30:00+00:00",
+    "producer": "Adobe Acrobat Pro DC 23.1",
+    "creator": "Adobe Acrobat Pro DC",
+    "author": "demo",
+    "pages": 1,
+    "eof_markers": 1,
+    "flags": [
+      "editor_producer"
+    ],
+    "flag_details": {
+      "editor_producer": "ПО создания/обработки — «Adobe Acrobat Pro DC 23.1» (маркер «acrobat pro»): документ сформирован или пересохранён в редакторе, а не получен со сканера."
+    },
+    "integrity_score": 75,
+    "integrity_level": "требует проверки оригинала",
+    "note": "Обнаружены технические признаки, требующие проверки оригинала документа.",
+    "error": ""
+  },
+  {
+    "source_file": "dogovor_010.pdf",
+    "creation_date": "2026-04-14T04:00:00+00:00",
+    "mod_date": "2026-05-27T09:30:00+00:00",
+    "producer": "Nitro Pro 14",
+    "creator": "Nitro Pro",
+    "author": "demo",
+    "pages": 1,
+    "eof_markers": 2,
+    "flags": [
+      "modified_after_creation",
+      "editor_producer",
+      "incremental_update"
+    ],
+    "flag_details": {
+      "modified_after_creation": "дата изменения (2026-05-27) позже даты создания (2026-04-14) на 43 дн. при пороге 1 дн.",
+      "editor_producer": "ПО создания/обработки — «Nitro Pro 14» (маркер «nitro pro»): документ сформирован или пересохранён в редакторе, а не получен со сканера.",
+      "incremental_update": "в файле 2 секции %%EOF — файл сохранялся поверх исходной версии 1 раз(а) (так выглядят правки, аннотации или добавленные страницы поверх готового PDF)."
+    },
+    "integrity_score": 15,
+    "integrity_level": "высокий риск: требует проверки оригинала",
+    "note": "Обнаружены технические признаки, требующие проверки оригинала документа.",
+    "error": ""
+  },
+  {
+    "source_file": "dogovor_011.pdf",
+    "creation_date": "2026-05-22T04:00:00+00:00",
+    "mod_date": "2026-05-22T09:30:00+00:00",
+    "producer": "Epson Scan 2",
+    "creator": "Epson Scan 2",
+    "author": "demo",
+    "pages": 1,
+    "eof_markers": 1,
+    "flags": [],
+    "flag_details": {},
+    "integrity_score": 100,
+    "integrity_level": "признаков не обнаружено",
+    "note": "Технических признаков редактирования после создания не обнаружено.",
+    "error": ""
+  },
+  {
+    "source_file": "dogovor_012.pdf",
+    "creation_date": "2026-06-18T04:00:00+00:00",
+    "mod_date": "2026-06-18T09:30:00+00:00",
+    "producer": "Google Chrome / Skia",
+    "creator": "Skia/PDF m124",
+    "author": "demo",
+    "pages": 1,
+    "eof_markers": 1,
+    "flags": [],
+    "flag_details": {},
+    "integrity_score": 100,
+    "integrity_level": "признаков не обнаружено",
+    "note": "Технических признаков редактирования после создания не обнаружено.",
+    "error": ""
+  }
+]

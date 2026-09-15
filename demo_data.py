@@ -8,11 +8,13 @@
 Создаёт в указанной папке файлы в том же формате, что и реальные этапы:
     contracts.json, alternatives.json, price_benchmark.json, category_stats.json,
     tor_compliance.json, fragmentation_clusters.json
+и папку --pdf-dir с демо-PDF (пустые страницы с разными метаданными), по которым
+integrity_check.py (Этап 5А) строит integrity_check.json уже по-настоящему.
 
 ВАЖНО: все компании, договоры и суммы вымышлены и сгенерированы для демонстрации.
 
 Запуск:
-    python demo_data.py --output-dir ./demo_results
+    python demo_data.py --output-dir ./demo_results --pdf-dir ./demo_contracts
 """
 
 import argparse
@@ -22,12 +24,17 @@ import statistics
 from datetime import date, timedelta
 from pathlib import Path
 
+try:
+    import pikepdf
+except ImportError:  # демо-PDF просто не создаются
+    pikepdf = None
+
 SEED = 42
 
 # (source_file, supplier, customer, amount, date, service_text, tech_stack, district)
 CONTRACTS = [
     ("dogovor_001.pdf", "ТОО «Цифровой Меридиан»", "ГУ «Аппарат акима Сарыаркинского района»",
-     4_800_000, "2026-03-12", "Разработка веб-портала для приёма обращений граждан с личным кабинетом.",
+     3_600_000, "2026-03-12", "Разработка веб-портала для приёма обращений граждан с личным кабинетом.",
      "PHP, Laravel, PostgreSQL", "Сарыаркинский район"),
     ("dogovor_002.pdf", "ТОО «Аймақ Софт»", "ГУ «Отдел образования Есильского района»",
      2_950_000, "2026-02-03", "Разработка сайта отдела образования с новостной лентой и разделом документов.",
@@ -225,7 +232,8 @@ def build(out_dir: Path) -> None:
             "threshold_kzt": 3_000_000, "suspicion_score": score, "suspicion_level": level,
             "explanation": (f"{len(members)} договора одного заказчика с похожим предметом "
                             f"(похожесть {sim}), интервал {(dates[-1] - dates[0]).days} дн.; "
-                            f"каждый ниже порога {3_000_000:,} ₸, суммарно {total:,} ₸. {reason}"),
+                            + ("каждый ниже порога" if each_below else "не все ниже порога")
+                            + f" {3_000_000:,} ₸, суммарно {total:,} ₸. {reason}").replace(",", " "),
             "llm_check": {"same_subject": True, "reason": reason},
         }
 
@@ -249,11 +257,80 @@ def build(out_dir: Path) -> None:
     print(f"Демо-данные записаны в {out_dir}/ ({len(contracts)} договоров)")
 
 
+# ---------------------------------------------------------------------------
+# Демо-PDF для Этапа 5А: (source_file, producer, creator, created, modified, kind)
+# kind: "scan" — страница-картинка без текста; "ocr" — картинка + текстовый слой;
+#       "text" — только текст; "incremental" — text + инкрементальное сохранение
+# ---------------------------------------------------------------------------
+
+PDF_SPECS = {
+    "dogovor_001.pdf": ("Canon iR-ADV C5535 PDF", "Canon Scan Utility", "20260312", "20260312", "scan"),
+    "dogovor_002.pdf": ("Microsoft® Word 2019", "Microsoft® Word 2019", "20260203", "20260203", "text"),
+    "dogovor_003.pdf": ("Adobe Acrobat Pro DC 23.1", "Adobe Acrobat Pro DC", "20260420", "20260702", "incremental"),
+    "dogovor_004.pdf": ("ABBYY FineReader 15", "ScanSnap Manager", "20260128", "20260128", "ocr"),
+    "dogovor_005.pdf": ("Xerox WorkCentre 7845", "Xerox Scan", "20260217", "20260217", "scan"),
+    "dogovor_006.pdf": ("LibreOffice 7.6", "Writer", "20260330", "20260330", "text"),
+    "dogovor_007.pdf": ("Microsoft® Word для Microsoft 365", "Microsoft® Word", "20260302", "20260302", "text"),
+    "dogovor_008.pdf": ("Kyocera TASKalfa 3253ci", "Kyocera Scan", "20260511", "20260511", "scan"),
+    "dogovor_009.pdf": ("Adobe Acrobat Pro DC 23.1", "Adobe Acrobat Pro DC", "20260605", "20260605", "text"),
+    "dogovor_010.pdf": ("Nitro Pro 14", "Nitro Pro", "20260414", "20260527", "incremental"),
+    "dogovor_011.pdf": ("Epson Scan 2", "Epson Scan 2", "20260522", "20260522", "scan"),
+    "dogovor_012.pdf": ("Google Chrome / Skia", "Skia/PDF m124", "20260618", "20260618", "text"),
+}
+
+
+def _demo_page(pdf, kind: str):
+    """Страница A4 с картинкой (серый прямоугольник как «скан») и/или ASCII-текстом."""
+    from pikepdf import Dictionary, Name, Stream
+    resources, content = Dictionary(), b""
+    if kind in ("scan", "ocr"):
+        img = Stream(pdf, bytes([200]) * (40 * 56), Type=Name.XObject, Subtype=Name.Image,
+                     Width=40, Height=56, ColorSpace=Name.DeviceGray, BitsPerComponent=8)
+        resources.XObject = Dictionary(Im0=img)
+        content += b"q 495 0 0 742 50 50 cm /Im0 Do Q\n"
+    if kind in ("ocr", "text", "incremental"):
+        resources.Font = Dictionary(F1=Dictionary(Type=Name.Font, Subtype=Name.Type1, BaseFont=Name.Helvetica))
+        content += b"BT /F1 12 Tf 60 780 Td (DEMO CONTRACT - synthetic document for dashboard) Tj ET\n"
+    return Dictionary(Type=Name.Page, MediaBox=[0, 0, 595, 842], Resources=resources,
+                      Contents=Stream(pdf, content))
+
+
+def build_pdfs(pdf_dir: Path) -> None:
+    """Создаёт демо-PDF с заданными метаданными. Без pikepdf — тихо пропускается."""
+    if pikepdf is None:
+        print("pikepdf не установлен — демо-PDF не созданы (Этап 5А будет без данных)")
+        return
+    pdf_dir.mkdir(parents=True, exist_ok=True)
+    for name, (producer, creator, created, modified, kind) in PDF_SPECS.items():
+        pdf = pikepdf.new()
+        pdf.pages.append(pikepdf.Page(_demo_page(pdf, kind)))
+        pdf.docinfo["/Producer"] = producer
+        pdf.docinfo["/Creator"] = creator
+        pdf.docinfo["/Author"] = "demo"
+        pdf.docinfo["/CreationDate"] = f"D:{created}100000+06'00'"
+        pdf.docinfo["/ModDate"] = f"D:{modified}153000+06'00'"
+        path = pdf_dir / name
+        pdf.save(path, fix_metadata_version=False)
+        if kind == "incremental":
+            # правка поверх готового файла: pikepdf дописывает новую секцию xref + %%EOF
+            with pikepdf.open(path, allow_overwriting_input=True) as p2:
+                p2.docinfo["/Subject"] = "amended"
+                p2.save(path, fix_metadata_version=False)
+            # эмулируем инкрементальное сохранение: второй %%EOF в хвосте файла
+            with open(path, "ab") as f:
+                f.write(b"\n%% incremental update marker\n%%EOF\n")
+    print(f"Демо-PDF записаны в {pdf_dir}/ ({len(PDF_SPECS)} файлов)")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Генерация демо-данных для дашборда")
     parser.add_argument("--output-dir", default="./demo_results")
+    parser.add_argument("--pdf-dir", default="./demo_contracts", help="куда положить демо-PDF для Этапа 5А")
     args = parser.parse_args()
     build(Path(args.output_dir))
+    build_pdfs(Path(args.pdf_dir))
+    print("Теперь: python integrity_check.py --input", args.pdf_dir,
+          "--output", str(Path(args.output_dir) / "integrity_check.json"))
     return 0
 
 

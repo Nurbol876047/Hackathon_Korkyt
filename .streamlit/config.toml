@@ -1,0 +1,15 @@
+# Тема дашборда: сдержанная, тёмно-синий основной цвет, без ярких акцентов
+[theme]
+base = "light"
+primaryColor = "#1F3A5F"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F3F5F8"
+textColor = "#1B2430"
+font = "sans serif"
+
+[server]
+headless = true
+runOnSave = true
+
+[browser]
+gatherUsageStats = false

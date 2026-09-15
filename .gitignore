@@ -5,3 +5,4 @@ __pycache__/
 .env
 /alternatives.json
 results/
+user_data/

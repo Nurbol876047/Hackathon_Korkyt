@@ -3,7 +3,7 @@
     "contract_id": "№ 7-Д/2026",
     "source_file": "dogovor_001.pdf",
     "current_supplier": "ТОО «Цифровой Меридиан»",
-    "current_price_kzt": 4800000,
+    "current_price_kzt": 3600000,
     "service_text": "Разработка веб-портала для приёма обращений граждан с личным кабинетом.",
     "service_category": "разработка веб-сайтов и порталов",
     "market_source": "synthetic",
@@ -13,7 +13,7 @@
         "company": "ТОО «Turkistan Web»",
         "city": "Астана",
         "price_kzt": 1260000,
-        "price_diff_pct": 73.8,
+        "price_diff_pct": 65.0,
         "relevance_reason": "аналогичный объём работ и стек",
         "offer": "Создание сайтов под ключ"
       },
@@ -21,7 +21,7 @@
         "company": "ТОО «Тұран Софт»",
         "city": "Актобе",
         "price_kzt": 1370000,
-        "price_diff_pct": 71.5,
+        "price_diff_pct": 61.9,
         "relevance_reason": "аналогичный объём работ и стек",
         "offer": "Создание сайтов под ключ"
       },
@@ -29,7 +29,7 @@
         "company": "ТОО «Beibitshilik Soft»",
         "city": "Караганда",
         "price_kzt": 1890000,
-        "price_diff_pct": 60.6,
+        "price_diff_pct": 47.5,
         "relevance_reason": "аналогичный объём работ и стек",
         "offer": "Создание сайтов под ключ"
       },
@@ -37,7 +37,7 @@
         "company": "ТОО «Ulytau Systems»",
         "city": "Караганда",
         "price_kzt": 2110000,
-        "price_diff_pct": 56.0,
+        "price_diff_pct": 41.4,
         "relevance_reason": "аналогичный объём работ и стек",
         "offer": "Создание сайтов под ключ"
       },
@@ -45,7 +45,7 @@
         "company": "ТОО «Kokshe IT»",
         "city": "Шымкент",
         "price_kzt": 2550000,
-        "price_diff_pct": 46.9,
+        "price_diff_pct": 29.2,
         "relevance_reason": "аналогичный объём работ и стек",
         "offer": "Создание сайтов под ключ"
       }
@@ -54,12 +54,12 @@
       "company": "ТОО «Turkistan Web»",
       "city": "Астана",
       "price_kzt": 1260000,
-      "price_diff_pct": 73.8,
+      "price_diff_pct": 65.0,
       "relevance_reason": "аналогичный объём работ и стек",
       "offer": "Создание сайтов под ключ"
     },
-    "potential_savings_kzt": 3540000,
-    "potential_savings_pct": 73.8,
+    "potential_savings_kzt": 2340000,
+    "potential_savings_pct": 65.0,
     "note": ""
   },
   {
