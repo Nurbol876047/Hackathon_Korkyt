@@ -301,12 +301,11 @@ def render_table(view: pd.DataFrame) -> str | None:
     styler = (view[cols].style.map(style_risk, subset=["Риск"])
               .format({"Сумма, ₸": "{:,.0f}", "Экономия, ₸": "{:,.0f}", "Откл. от медианы, %": "{:+.1f}"},
                       na_rep="—"))
-    event = st.dataframe(styler, hide_index=True, width="stretch", on_select="rerun",
-                         selection_mode="single-row", key="contracts_table",
+    event = st.dataframe(styler, hide_index=True, use_container_width=True, key="contracts_table",
                          height=min(60 + 36 * len(view), 520),
                          column_config={"Риск": st.column_config.TextColumn(width="medium"),
                                         "Сигналы": st.column_config.TextColumn(width="medium")})
-    rows = event.selection.rows if event and event.selection else []
+    rows = getattr(getattr(event, "selection", None), "rows", []) if event else []
     if rows and rows[0] < len(view):
         return view.iloc[rows[0]]["source_file"]
     # Строка не отмечена — запасной выбор списком (по умолчанию самый рискованный договор)
