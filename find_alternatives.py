@@ -438,7 +438,10 @@ def compute_price_diffs(target_price: float, alternatives: list) -> list:
     result = []
     for alt in alternatives:
         item = dict(alt)
-        item["price_diff_pct"] = round((target_price - alt["price_kzt"]) / target_price * 100, 1)
+        if target_price > 0:
+            item["price_diff_pct"] = round((target_price - alt["price_kzt"]) / target_price * 100, 1)
+        else:
+            item["price_diff_pct"] = 0.0
         result.append(item)
     return result
 
@@ -495,10 +498,10 @@ def process_contract(model, contract: dict, db: dict, db_path: Path, mode: str,
     except (TypeError, ValueError):
         target_price = 0.0
 
-    # Договоры без суммы или описания сравнивать не с чем — оставляем запись с пометкой
-    if target_price <= 0 or not service_text:
-        print("    – пропуск: нет суммы или описания услуги", flush=True)
-        return make_result(contract, note="нет данных для сравнения (сумма или описание услуги отсутствуют)")
+    # Договоры без описания сравнивать не с чем — оставляем запись с пометкой
+    if not service_text:
+        print("    – пропуск: нет описания услуги", flush=True)
+        return make_result(contract, note="нет данных для сравнения (описание услуги отсутствует)")
 
     # 1. Категория услуги
     category_info = classify_service_category(
@@ -529,8 +532,8 @@ def process_contract(model, contract: dict, db: dict, db_path: Path, mode: str,
     top = [build_alternative_view(a) for a in ranked[:top_n]]
 
     best = top[0] if top else None
-    savings = int(round(max(0.0, target_price - best["price_kzt"]))) if best else 0
-    savings_pct = round(savings / target_price * 100, 1) if best else 0.0
+    savings = int(round(max(0.0, target_price - best["price_kzt"]))) if best and target_price > 0 else 0
+    savings_pct = round(savings / target_price * 100, 1) if best and target_price > 0 else 0.0
 
     note = ""
     if not top:

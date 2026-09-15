@@ -68,6 +68,7 @@ STRING_FIELDS = (
     "service_text",
     "tech_stack_mentioned",
     "district",
+    "ai_assessment",
 )
 
 # Порядок колонок в CSV и ключей в JSON. К полям схемы добавлены служебные:
@@ -87,6 +88,7 @@ CSV_FIELDS = [
     "tech_stack_mentioned",
     "district",
     "confidence",
+    "ai_assessment",
     "error",
 ]
 
@@ -126,6 +128,9 @@ SYSTEM_PROMPT = """Ты — ассистент аудитора государс
    - "medium" — часть полей не найдена или есть небольшие сомнения в прочтении;
    - "low"    — скан плохого качества, текст читается с трудом, данные противоречивы
                 или документ не похож на договор госзакупки.
+11. ai_assessment — твои мысли и оценка как эксперта: какова реальная рыночная ценность
+    этой закупки, есть ли схожие темы или аналоги на рынке, насколько адекватно описан
+    предмет (1-4 предложения на русском языке).
 Отвечай только JSON по схеме, без пояснений."""
 
 USER_PROMPT = "Извлеки данные из приложенного документа (файл: {name}) согласно схеме."
@@ -189,6 +194,10 @@ def build_response_schema() -> protos.Schema:
                 format_="enum",
                 enum=list(CONFIDENCE_VALUES),
                 description="Уверенность в извлечённых данных: high / medium / low.",
+            ),
+            "ai_assessment": S(
+                type=T.STRING,
+                description="Оценка ИИ (мысли о ценности, аналоги на рынке, адекватность описания). Пустая строка, если нет данных.",
             ),
         },
         required=[*STRING_FIELDS, "amount_kzt", "confidence"],

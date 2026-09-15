@@ -324,8 +324,9 @@ def price_chart(contract_price: float, median: float, level: str, cat_stats: dic
                 category: str) -> go.Figure:
     """Bar chart «цена договора / медиана категории» + диапазон рынка (если есть)."""
     fig = go.Figure()
-    fig.add_bar(x=["Цена договора"], y=[contract_price], marker_color=RISK_FG[level],
-                text=[fmt_kzt(contract_price)], textposition="outside", width=0.5)
+    if contract_price > 0:
+        fig.add_bar(x=["Цена договора"], y=[contract_price], marker_color=RISK_FG.get(level, C_SECONDARY),
+                    text=[fmt_kzt(contract_price)], textposition="outside", width=0.5)
     fig.add_bar(x=["Медиана категории"], y=[median], marker_color=C_SECONDARY,
                 text=[fmt_kzt(median)], textposition="outside", width=0.5)
     stats = (cat_stats or {}).get(category)
@@ -348,18 +349,22 @@ def block_price(m: dict, data: dict):
     if data["price_benchmark"] is None:
         na("данные недоступны — Этап 3 (price_benchmark.py) не запущен")
         return
-    if not b or b.get("risk_level") not in RISK_FG:
+    if not b or (b.get("risk_level") not in RISK_FG and not b.get("category_median_price")):
         na((b or {}).get("benchmark_note") or "недостаточно данных для сравнения")
         return
-    st.markdown(badge(b["risk_level"]) + f" &nbsp;<span class='muted'>категория: {b['category'] or '—'} · "
+    risk_badge = badge(b["risk_level"]) if b.get("risk_level") in RISK_FG else badge(RISK_OK, "нет цены")
+    st.markdown(risk_badge + f" &nbsp;<span class='muted'>категория: {b['category'] or '—'} · "
                 f"выборка {b['sample_size']} цен</span>", unsafe_allow_html=True)
     st.plotly_chart(price_chart(float(c.get("amount_kzt") or 0), float(b["category_median_price"]),
                                 b["risk_level"], data["category_stats"], b["category"]),
                     width="stretch", config={"displayModeBar": False})
-    st.markdown(f"Отклонение от медианы: **{b['price_deviation_pct']:+.1f}%** (×{b['price_ratio']})"
-                + (f"<br><span class='muted'>{b['benchmark_note']}</span>" if b.get("benchmark_note") else "")
-                + (f"<br><span class='muted'>{b['district_context']}</span>" if b.get("district_context") else ""),
-                unsafe_allow_html=True)
+    if float(c.get("amount_kzt") or 0) > 0:
+        st.markdown(f"Отклонение от медианы: **{b['price_deviation_pct']:+.1f}%** (×{b['price_ratio']})"
+                    + (f"<br><span class='muted'>{b['benchmark_note']}</span>" if b.get("benchmark_note") else "")
+                    + (f"<br><span class='muted'>{b['district_context']}</span>" if b.get("district_context") else ""),
+                    unsafe_allow_html=True)
+    else:
+        st.markdown(f"<span class='muted'>{b.get('benchmark_note', '')}</span>", unsafe_allow_html=True)
 
 
 def block_alternatives(m: dict, data: dict):
@@ -375,13 +380,28 @@ def block_alternatives(m: dict, data: dict):
         na(a.get("note") or "более дешёвых релевантных предложений не найдено")
         return
     best = a["best_alternative"]
-    st.markdown(f"Потенциальная экономия: <b style='color:{RISK_FG[RISK_OK]}'>{fmt_kzt(a['potential_savings_kzt'])} "
-                f"({a['potential_savings_pct']:.1f}%)</b> &nbsp;<span class='muted'>лучшее предложение — "
-                f"{best['company']}, {best.get('city') or '—'}</span>", unsafe_allow_html=True)
+    c = m["contract"]
+    has_price = float(c.get("amount_kzt") or 0) > 0
+    
+    if has_price:
+        st.markdown(f"Потенциальная экономия: <b style='color:{RISK_FG[RISK_OK]}'>{fmt_kzt(a['potential_savings_kzt'])} "
+                    f"({a['potential_savings_pct']:.1f}%)</b> &nbsp;<span class='muted'>лучшее предложение — "
+                    f"{best['company']}, {best.get('city') or '—'}</span>", unsafe_allow_html=True)
+    else:
+        st.markdown(f"Сумма закупки не указана. <span class='muted'>Лучшее предложение на рынке — "
+                    f"{best['company']}, {best.get('city') or '—'} за {fmt_kzt(best['price_kzt'])}</span>", unsafe_allow_html=True)
+                    
     adf = pd.DataFrame(a["alternatives"])[["company", "city", "price_kzt", "price_diff_pct", "relevance_reason"]]
-    adf.columns = ["Компания", "Город", "Цена, ₸", "Дешевле на, %", "Почему релевантно"]
-    st.dataframe(adf.style.format({"Цена, ₸": "{:,.0f}", "Дешевле на, %": "{:.1f}"}),
-                 hide_index=True, width="stretch", height=min(60 + 36 * len(adf), 260))
+    
+    if has_price:
+        adf.columns = ["Компания", "Город", "Цена, ₸", "Дешевле на, %", "Почему релевантно"]
+        st.dataframe(adf.style.format({"Цена, ₸": "{:,.0f}", "Дешевле на, %": "{:.1f}"}),
+                     hide_index=True, width="stretch", height=min(60 + 36 * len(adf), 260))
+    else:
+        adf = adf.drop(columns=["price_diff_pct"])
+        adf.columns = ["Компания", "Город", "Цена, ₸", "Почему релевантно"]
+        st.dataframe(adf.style.format({"Цена, ₸": "{:,.0f}"}),
+                     hide_index=True, width="stretch", height=min(60 + 36 * len(adf), 260))
     src = "синтетический рынок (компании вымышлены, для демо)" if a.get("market_source") == "synthetic" \
         else a.get("market_source") or "—"
     st.markdown(f"<span class='muted'>Источник: {src} · проверено кандидатов: {a.get('candidates_checked', 0)}</span>",
@@ -479,6 +499,8 @@ def render_details(m: dict, data: dict):
                    if c.get("tech_stack_mentioned") else "")
                 + (f"  \n<span class='muted'>Уверенность извлечения (Этап 1): {c['confidence']}</span>"
                    if c.get("confidence") else ""), unsafe_allow_html=True)
+    if c.get("ai_assessment"):
+        st.info(f"**Оценка ИИ:** {c['ai_assessment']}")
     if c.get("error"):
         st.warning(f"Этап 1 завершился с ошибкой для этого файла: {c['error']}")
 

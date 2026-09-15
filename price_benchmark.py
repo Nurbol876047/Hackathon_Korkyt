@@ -484,7 +484,7 @@ def main() -> int:
             note = "нет описания услуги — категория не определена"
         elif price <= 0:
             deviation, ratio, risk, median = 0.0, 0.0, RISK_NO_DATA, st["median_price"]
-            note = "сумма договора не извлечена"
+            note = f"сумма не указана, рыночная медиана: {int(st['median_price']):,} тг".replace(",", " ")
         elif st["sample_size"] < MIN_SAMPLE_SIZE:
             deviation, ratio = price_deviation_score(price, st["median_price"])
             risk, median = RISK_NO_DATA, st["median_price"]

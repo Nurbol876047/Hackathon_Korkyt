@@ -1,0 +1,21 @@
+{
+  "поставка строительного инвентаря": {
+    "description": "Закупка строительного инвентаря и хозяйственных товаров для выполнения строительно-ремонтных и бытовых работ.",
+    "median_price": 0,
+    "mean_price": 0,
+    "std_price": 0,
+    "min_price": 0,
+    "max_price": 0,
+    "contracts_count": 1,
+    "contracts_with_price": 0,
+    "market_prices_count": 0,
+    "sample_size": 0,
+    "market_categories": [],
+    "risk_counts": {
+      "норма": 0,
+      "требует проверки": 0,
+      "высокий риск": 0,
+      "недостаточно данных": 1
+    }
+  }
+}
