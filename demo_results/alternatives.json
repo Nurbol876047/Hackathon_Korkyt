@@ -1,0 +1,638 @@
+[
+  {
+    "contract_id": "№ 7-Д/2026",
+    "source_file": "dogovor_001.pdf",
+    "current_supplier": "ТОО «Цифровой Меридиан»",
+    "current_price_kzt": 4800000,
+    "service_text": "Разработка веб-портала для приёма обращений граждан с личным кабинетом.",
+    "service_category": "разработка веб-сайтов и порталов",
+    "market_source": "synthetic",
+    "candidates_checked": 12,
+    "alternatives": [
+      {
+        "company": "ТОО «Turkistan Web»",
+        "city": "Астана",
+        "price_kzt": 1260000,
+        "price_diff_pct": 73.8,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Тұран Софт»",
+        "city": "Актобе",
+        "price_kzt": 1370000,
+        "price_diff_pct": 71.5,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Beibitshilik Soft»",
+        "city": "Караганда",
+        "price_kzt": 1890000,
+        "price_diff_pct": 60.6,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Ulytau Systems»",
+        "city": "Караганда",
+        "price_kzt": 2110000,
+        "price_diff_pct": 56.0,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Kokshe IT»",
+        "city": "Шымкент",
+        "price_kzt": 2550000,
+        "price_diff_pct": 46.9,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      }
+    ],
+    "best_alternative": {
+      "company": "ТОО «Turkistan Web»",
+      "city": "Астана",
+      "price_kzt": 1260000,
+      "price_diff_pct": 73.8,
+      "relevance_reason": "аналогичный объём работ и стек",
+      "offer": "Создание сайтов под ключ"
+    },
+    "potential_savings_kzt": 3540000,
+    "potential_savings_pct": 73.8,
+    "note": ""
+  },
+  {
+    "contract_id": "№ 14-Д/2026",
+    "source_file": "dogovor_002.pdf",
+    "current_supplier": "ТОО «Аймақ Софт»",
+    "current_price_kzt": 2950000,
+    "service_text": "Разработка сайта отдела образования с новостной лентой и разделом документов.",
+    "service_category": "разработка веб-сайтов и порталов",
+    "market_source": "synthetic",
+    "candidates_checked": 12,
+    "alternatives": [
+      {
+        "company": "ТОО «Turkistan Web»",
+        "city": "Астана",
+        "price_kzt": 1260000,
+        "price_diff_pct": 57.3,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Тұран Софт»",
+        "city": "Актобе",
+        "price_kzt": 1370000,
+        "price_diff_pct": 53.6,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Beibitshilik Soft»",
+        "city": "Караганда",
+        "price_kzt": 1890000,
+        "price_diff_pct": 35.9,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Ulytau Systems»",
+        "city": "Караганда",
+        "price_kzt": 2110000,
+        "price_diff_pct": 28.5,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Kokshe IT»",
+        "city": "Шымкент",
+        "price_kzt": 2550000,
+        "price_diff_pct": 13.6,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      }
+    ],
+    "best_alternative": {
+      "company": "ТОО «Turkistan Web»",
+      "city": "Астана",
+      "price_kzt": 1260000,
+      "price_diff_pct": 57.3,
+      "relevance_reason": "аналогичный объём работ и стек",
+      "offer": "Создание сайтов под ключ"
+    },
+    "potential_savings_kzt": 1690000,
+    "potential_savings_pct": 57.3,
+    "note": ""
+  },
+  {
+    "contract_id": "№ 28-Д/2026",
+    "source_file": "dogovor_004.pdf",
+    "current_supplier": "ТОО «Дала Технолоджис»",
+    "current_price_kzt": 1350000,
+    "service_text": "Разработка лендинга для анонса культурных мероприятий района.",
+    "service_category": "разработка веб-сайтов и порталов",
+    "market_source": "synthetic",
+    "candidates_checked": 12,
+    "alternatives": [
+      {
+        "company": "ТОО «Turkistan Web»",
+        "city": "Астана",
+        "price_kzt": 1260000,
+        "price_diff_pct": 6.7,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      }
+    ],
+    "best_alternative": {
+      "company": "ТОО «Turkistan Web»",
+      "city": "Астана",
+      "price_kzt": 1260000,
+      "price_diff_pct": 6.7,
+      "relevance_reason": "аналогичный объём работ и стек",
+      "offer": "Создание сайтов под ключ"
+    },
+    "potential_savings_kzt": 90000,
+    "potential_savings_pct": 6.7,
+    "note": ""
+  },
+  {
+    "contract_id": "№ 35-Д/2026",
+    "source_file": "dogovor_005.pdf",
+    "current_supplier": "ИП Сериков Б.Т.",
+    "current_price_kzt": 2850000,
+    "service_text": "Создание интернет-сайта отдела образования: разделы новостей и документы.",
+    "service_category": "разработка веб-сайтов и порталов",
+    "market_source": "synthetic",
+    "candidates_checked": 12,
+    "alternatives": [
+      {
+        "company": "ТОО «Turkistan Web»",
+        "city": "Астана",
+        "price_kzt": 1260000,
+        "price_diff_pct": 55.8,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Тұран Софт»",
+        "city": "Актобе",
+        "price_kzt": 1370000,
+        "price_diff_pct": 51.9,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Beibitshilik Soft»",
+        "city": "Караганда",
+        "price_kzt": 1890000,
+        "price_diff_pct": 33.7,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Ulytau Systems»",
+        "city": "Караганда",
+        "price_kzt": 2110000,
+        "price_diff_pct": 26.0,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Kokshe IT»",
+        "city": "Шымкент",
+        "price_kzt": 2550000,
+        "price_diff_pct": 10.5,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      }
+    ],
+    "best_alternative": {
+      "company": "ТОО «Turkistan Web»",
+      "city": "Астана",
+      "price_kzt": 1260000,
+      "price_diff_pct": 55.8,
+      "relevance_reason": "аналогичный объём работ и стек",
+      "offer": "Создание сайтов под ключ"
+    },
+    "potential_savings_kzt": 1590000,
+    "potential_savings_pct": 55.8,
+    "note": ""
+  },
+  {
+    "contract_id": "№ 49-Д/2026",
+    "source_file": "dogovor_007.pdf",
+    "current_supplier": "ТОО «Аймақ Софт»",
+    "current_price_kzt": 2900000,
+    "service_text": "Доработка сайта отдела образования: добавление раздела документов и новостей.",
+    "service_category": "разработка веб-сайтов и порталов",
+    "market_source": "synthetic",
+    "candidates_checked": 12,
+    "alternatives": [
+      {
+        "company": "ТОО «Turkistan Web»",
+        "city": "Астана",
+        "price_kzt": 1260000,
+        "price_diff_pct": 56.6,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Тұран Софт»",
+        "city": "Актобе",
+        "price_kzt": 1370000,
+        "price_diff_pct": 52.8,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Beibitshilik Soft»",
+        "city": "Караганда",
+        "price_kzt": 1890000,
+        "price_diff_pct": 34.8,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Ulytau Systems»",
+        "city": "Караганда",
+        "price_kzt": 2110000,
+        "price_diff_pct": 27.2,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Kokshe IT»",
+        "city": "Шымкент",
+        "price_kzt": 2550000,
+        "price_diff_pct": 12.1,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      }
+    ],
+    "best_alternative": {
+      "company": "ТОО «Turkistan Web»",
+      "city": "Астана",
+      "price_kzt": 1260000,
+      "price_diff_pct": 56.6,
+      "relevance_reason": "аналогичный объём работ и стек",
+      "offer": "Создание сайтов под ключ"
+    },
+    "potential_savings_kzt": 1640000,
+    "potential_savings_pct": 56.6,
+    "note": ""
+  },
+  {
+    "contract_id": "№ 63-Д/2026",
+    "source_file": "dogovor_009.pdf",
+    "current_supplier": "ТОО «Цифровой Меридиан»",
+    "current_price_kzt": 7900000,
+    "service_text": "Разработка веб-портала для приёма обращений граждан (второй этап, модуль аналитики).",
+    "service_category": "разработка веб-сайтов и порталов",
+    "market_source": "synthetic",
+    "candidates_checked": 12,
+    "alternatives": [
+      {
+        "company": "ТОО «Turkistan Web»",
+        "city": "Астана",
+        "price_kzt": 1260000,
+        "price_diff_pct": 84.1,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Тұран Софт»",
+        "city": "Актобе",
+        "price_kzt": 1370000,
+        "price_diff_pct": 82.7,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Beibitshilik Soft»",
+        "city": "Караганда",
+        "price_kzt": 1890000,
+        "price_diff_pct": 76.1,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Ulytau Systems»",
+        "city": "Караганда",
+        "price_kzt": 2110000,
+        "price_diff_pct": 73.3,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      },
+      {
+        "company": "ТОО «Kokshe IT»",
+        "city": "Шымкент",
+        "price_kzt": 2550000,
+        "price_diff_pct": 67.7,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Создание сайтов под ключ"
+      }
+    ],
+    "best_alternative": {
+      "company": "ТОО «Turkistan Web»",
+      "city": "Астана",
+      "price_kzt": 1260000,
+      "price_diff_pct": 84.1,
+      "relevance_reason": "аналогичный объём работ и стек",
+      "offer": "Создание сайтов под ключ"
+    },
+    "potential_savings_kzt": 6640000,
+    "potential_savings_pct": 84.1,
+    "note": ""
+  },
+  {
+    "contract_id": "№ 70-Д/2026",
+    "source_file": "dogovor_010.pdf",
+    "current_supplier": "ТОО «Орда Диджитал»",
+    "current_price_kzt": 980000,
+    "service_text": "Создание информационного сайта отдела ЖКХ с формой обратной связи.",
+    "service_category": "разработка веб-сайтов и порталов",
+    "market_source": "synthetic",
+    "candidates_checked": 12,
+    "alternatives": [],
+    "best_alternative": null,
+    "potential_savings_kzt": 0,
+    "potential_savings_pct": 0.0,
+    "note": "более дешёвых релевантных предложений не найдено"
+  },
+  {
+    "contract_id": "№ 42-Д/2026",
+    "source_file": "dogovor_006.pdf",
+    "current_supplier": "ТОО «Smart Qala»",
+    "current_price_kzt": 11500000,
+    "service_text": "Разработка мобильного приложения для записи в очередь в ЦОН (iOS и Android).",
+    "service_category": "мобильные приложения и чат-боты",
+    "market_source": "synthetic",
+    "candidates_checked": 12,
+    "alternatives": [
+      {
+        "company": "ИП Жанибеков А.",
+        "city": "Актобе",
+        "price_kzt": 6130000,
+        "price_diff_pct": 46.7,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Мобильные приложения под ключ"
+      },
+      {
+        "company": "ТОО «Bilim Digital»",
+        "city": "Павлодар",
+        "price_kzt": 6140000,
+        "price_diff_pct": 46.6,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Мобильные приложения под ключ"
+      },
+      {
+        "company": "ТОО «Aqmola IT»",
+        "city": "Кокшетау",
+        "price_kzt": 6190000,
+        "price_diff_pct": 46.2,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Мобильные приложения под ключ"
+      },
+      {
+        "company": "ТОО «Sary-Arka Tech»",
+        "city": "Актобе",
+        "price_kzt": 6600000,
+        "price_diff_pct": 42.6,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Мобильные приложения под ключ"
+      },
+      {
+        "company": "ТОО «Jetysu Web»",
+        "city": "Кокшетау",
+        "price_kzt": 7200000,
+        "price_diff_pct": 37.4,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Мобильные приложения под ключ"
+      }
+    ],
+    "best_alternative": {
+      "company": "ИП Жанибеков А.",
+      "city": "Актобе",
+      "price_kzt": 6130000,
+      "price_diff_pct": 46.7,
+      "relevance_reason": "аналогичный объём работ и стек",
+      "offer": "Мобильные приложения под ключ"
+    },
+    "potential_savings_kzt": 5370000,
+    "potential_savings_pct": 46.7,
+    "note": ""
+  },
+  {
+    "contract_id": "№ 84-Д/2026",
+    "source_file": "dogovor_012.pdf",
+    "current_supplier": "ТОО «Smart Qala»",
+    "current_price_kzt": 9800000,
+    "service_text": "Разработка чат-бота для консультаций граждан по госуслугам в Telegram и WhatsApp.",
+    "service_category": "мобильные приложения и чат-боты",
+    "market_source": "synthetic",
+    "candidates_checked": 12,
+    "alternatives": [
+      {
+        "company": "ИП Жанибеков А.",
+        "city": "Актобе",
+        "price_kzt": 6130000,
+        "price_diff_pct": 37.4,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Мобильные приложения под ключ"
+      },
+      {
+        "company": "ТОО «Bilim Digital»",
+        "city": "Павлодар",
+        "price_kzt": 6140000,
+        "price_diff_pct": 37.3,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Мобильные приложения под ключ"
+      },
+      {
+        "company": "ТОО «Aqmola IT»",
+        "city": "Кокшетау",
+        "price_kzt": 6190000,
+        "price_diff_pct": 36.8,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Мобильные приложения под ключ"
+      },
+      {
+        "company": "ТОО «Sary-Arka Tech»",
+        "city": "Актобе",
+        "price_kzt": 6600000,
+        "price_diff_pct": 32.7,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Мобильные приложения под ключ"
+      },
+      {
+        "company": "ТОО «Jetysu Web»",
+        "city": "Кокшетау",
+        "price_kzt": 7200000,
+        "price_diff_pct": 26.5,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Мобильные приложения под ключ"
+      }
+    ],
+    "best_alternative": {
+      "company": "ИП Жанибеков А.",
+      "city": "Актобе",
+      "price_kzt": 6130000,
+      "price_diff_pct": 37.4,
+      "relevance_reason": "аналогичный объём работ и стек",
+      "offer": "Мобильные приложения под ключ"
+    },
+    "potential_savings_kzt": 3670000,
+    "potential_savings_pct": 37.4,
+    "note": ""
+  },
+  {
+    "contract_id": "№ 21-Д/2026",
+    "source_file": "dogovor_003.pdf",
+    "current_supplier": "ТОО «КазНет Сервис»",
+    "current_price_kzt": 6200000,
+    "service_text": "Техническая поддержка и сопровождение информационных систем акимата на 12 месяцев.",
+    "service_category": "сопровождение и техподдержка ИС",
+    "market_source": "synthetic",
+    "candidates_checked": 12,
+    "alternatives": [
+      {
+        "company": "ТОО «Qazaq Cloud»",
+        "city": "Алматы",
+        "price_kzt": 1500000,
+        "price_diff_pct": 75.8,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Техническая поддержка под ключ"
+      },
+      {
+        "company": "ИП Жанибеков А.",
+        "city": "Алматы",
+        "price_kzt": 1970000,
+        "price_diff_pct": 68.2,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Техническая поддержка под ключ"
+      },
+      {
+        "company": "ТОО «Turkistan Web»",
+        "city": "Шымкент",
+        "price_kzt": 2150000,
+        "price_diff_pct": 65.3,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Техническая поддержка под ключ"
+      },
+      {
+        "company": "ТОО «Kokshe IT»",
+        "city": "Шымкент",
+        "price_kzt": 2250000,
+        "price_diff_pct": 63.7,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Техническая поддержка под ключ"
+      },
+      {
+        "company": "ТОО «Sary-Arka Tech»",
+        "city": "Караганда",
+        "price_kzt": 2380000,
+        "price_diff_pct": 61.6,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Техническая поддержка под ключ"
+      }
+    ],
+    "best_alternative": {
+      "company": "ТОО «Qazaq Cloud»",
+      "city": "Алматы",
+      "price_kzt": 1500000,
+      "price_diff_pct": 75.8,
+      "relevance_reason": "аналогичный объём работ и стек",
+      "offer": "Техническая поддержка под ключ"
+    },
+    "potential_savings_kzt": 4700000,
+    "potential_savings_pct": 75.8,
+    "note": ""
+  },
+  {
+    "contract_id": "№ 77-Д/2026",
+    "source_file": "dogovor_011.pdf",
+    "current_supplier": "ТОО «КазНет Сервис»",
+    "current_price_kzt": 2100000,
+    "service_text": "Техническое сопровождение сайта и хостинг на 12 месяцев.",
+    "service_category": "сопровождение и техподдержка ИС",
+    "market_source": "synthetic",
+    "candidates_checked": 12,
+    "alternatives": [
+      {
+        "company": "ТОО «Qazaq Cloud»",
+        "city": "Алматы",
+        "price_kzt": 1500000,
+        "price_diff_pct": 28.6,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Техническая поддержка под ключ"
+      },
+      {
+        "company": "ИП Жанибеков А.",
+        "city": "Алматы",
+        "price_kzt": 1970000,
+        "price_diff_pct": 6.2,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Техническая поддержка под ключ"
+      }
+    ],
+    "best_alternative": {
+      "company": "ТОО «Qazaq Cloud»",
+      "city": "Алматы",
+      "price_kzt": 1500000,
+      "price_diff_pct": 28.6,
+      "relevance_reason": "аналогичный объём работ и стек",
+      "offer": "Техническая поддержка под ключ"
+    },
+    "potential_savings_kzt": 600000,
+    "potential_savings_pct": 28.6,
+    "note": ""
+  },
+  {
+    "contract_id": "№ 56-Д/2026",
+    "source_file": "dogovor_008.pdf",
+    "current_supplier": "ТОО «БайтЛаб»",
+    "current_price_kzt": 3400000,
+    "service_text": "Внедрение системы электронного документооборота на 40 рабочих мест.",
+    "service_category": "внедрение информационных систем",
+    "market_source": "synthetic",
+    "candidates_checked": 12,
+    "alternatives": [
+      {
+        "company": "ТОО «Тұран Софт»",
+        "city": "Актобе",
+        "price_kzt": 2970000,
+        "price_diff_pct": 12.6,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Внедрение СЭД под ключ"
+      },
+      {
+        "company": "ТОО «Kokshe IT»",
+        "city": "Кокшетау",
+        "price_kzt": 3030000,
+        "price_diff_pct": 10.9,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Внедрение СЭД под ключ"
+      },
+      {
+        "company": "ИП Жанибеков А.",
+        "city": "Актобе",
+        "price_kzt": 3340000,
+        "price_diff_pct": 1.8,
+        "relevance_reason": "аналогичный объём работ и стек",
+        "offer": "Внедрение СЭД под ключ"
+      }
+    ],
+    "best_alternative": {
+      "company": "ТОО «Тұран Софт»",
+      "city": "Актобе",
+      "price_kzt": 2970000,
+      "price_diff_pct": 12.6,
+      "relevance_reason": "аналогичный объём работ и стек",
+      "offer": "Внедрение СЭД под ключ"
+    },
+    "potential_savings_kzt": 430000,
+    "potential_savings_pct": 12.6,
+    "note": ""
+  }
+]

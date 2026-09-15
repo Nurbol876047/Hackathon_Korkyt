@@ -1,0 +1,86 @@
+{
+  "разработка веб-сайтов и порталов": {
+    "description": "Создание сайтов, лендингов, порталов и их доработка",
+    "median_price": 2900000,
+    "mean_price": 3023684,
+    "std_price": 1586898,
+    "min_price": 980000,
+    "max_price": 7900000,
+    "contracts_count": 7,
+    "contracts_with_price": 7,
+    "market_prices_count": 12,
+    "sample_size": 19,
+    "market_categories": [
+      "разработка веб-сайтов и порталов"
+    ],
+    "risk_counts": {
+      "норма": 5,
+      "требует проверки": 0,
+      "высокий риск": 2,
+      "недостаточно данных": 0
+    }
+  },
+  "мобильные приложения и чат-боты": {
+    "description": "Мобильные приложения, боты, интеграции с мессенджерами",
+    "median_price": 9210000,
+    "mean_price": 8833571,
+    "std_price": 2145380,
+    "min_price": 6130000,
+    "max_price": 11920000,
+    "contracts_count": 2,
+    "contracts_with_price": 2,
+    "market_prices_count": 12,
+    "sample_size": 14,
+    "market_categories": [
+      "мобильные приложения и чат-боты"
+    ],
+    "risk_counts": {
+      "норма": 1,
+      "требует проверки": 1,
+      "высокий риск": 0,
+      "недостаточно данных": 0
+    }
+  },
+  "сопровождение и техподдержка ИС": {
+    "description": "Техническая поддержка, хостинг, сопровождение систем",
+    "median_price": 3130000,
+    "mean_price": 3118571,
+    "std_price": 1221952,
+    "min_price": 1500000,
+    "max_price": 6200000,
+    "contracts_count": 2,
+    "contracts_with_price": 2,
+    "market_prices_count": 12,
+    "sample_size": 14,
+    "market_categories": [
+      "сопровождение и техподдержка ИС"
+    ],
+    "risk_counts": {
+      "норма": 1,
+      "требует проверки": 0,
+      "высокий риск": 1,
+      "недостаточно данных": 0
+    }
+  },
+  "внедрение информационных систем": {
+    "description": "Внедрение СЭД, 1С и других готовых систем",
+    "median_price": 3470000,
+    "mean_price": 3670000,
+    "std_price": 479183,
+    "min_price": 2970000,
+    "max_price": 4390000,
+    "contracts_count": 1,
+    "contracts_with_price": 1,
+    "market_prices_count": 12,
+    "sample_size": 13,
+    "market_categories": [
+      "внедрение информационных систем"
+    ],
+    "risk_counts": {
+      "норма": 1,
+      "требует проверки": 0,
+      "высокий риск": 0,
+      "недостаточно данных": 0
+    }
+  }
+}

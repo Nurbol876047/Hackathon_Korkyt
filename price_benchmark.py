@@ -60,8 +60,8 @@ MIN_SAMPLE_SIZE = 3           # минимум цен в категории, ч�
 DISTRICT_MIN_CONTRACTS = 2
 DISTRICT_DELTA_PP = 10.0
 
-# Параметры Gemini (как в Этапах 1–2). gemini-2.0-flash отключена Google → gemini-3.6-flash
-DEFAULT_MODEL = "gemini-3.6-flash"
+# Параметры Gemini
+DEFAULT_MODEL = "gemini-2.0-flash"
 MAX_RETRIES = 2
 RETRY_BASE_DELAY = 5
 RATE_LIMIT_DELAY = 30

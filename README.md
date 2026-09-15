@@ -18,8 +18,8 @@ MVP-платформа для внутреннего аудитора / реви
 | 1 | `extract_stage1.py` | папка с PDF | `contracts.json`, `contracts.csv` | готов |
 | 2 | `find_alternatives.py` | `contracts.json` | `alternatives.json`, `market_database.json` | готов |
 | 3 | `price_benchmark.py` | `contracts.json`, `market_database.json` | `price_benchmark.json`, `category_stats.json` | готов |
-| 4 | соответствие ТЗ + дробление закупок | — | — | в работе |
-| 5 | целостность PDF + Streamlit-дашборд | — | — | в работе |
+| 4 | `compliance_and_fragmentation.py` | `contracts.json` | `results/tor_compliance.json`, `results/fragmentation_clusters.json` | готов |
+| 5 | `dashboard.py` (Streamlit) | папка с результатами 1–4 | веб-дашборд | готов (без проверки целостности PDF) |
 
 Ключ стыковки записей между этапами — поле `source_file` (имя исходного PDF).
 
@@ -38,6 +38,14 @@ export GEMINI_API_KEY="ваш_ключ"   # https://aistudio.google.com/apikey
 .venv/bin/python find_alternatives.py --input contracts.json --output alternatives.json --mode synthetic
 .venv/bin/python price_benchmark.py --contracts contracts.json --market market_database.json --output price_benchmark.json
 ```
+
+```bash
+.venv/bin/python compliance_and_fragmentation.py --input contracts.json --output-dir ./results
+.venv/bin/streamlit run dashboard.py                      # http://localhost:8501
+```
+
+Дашборд читает файлы из `./results` (или из `./demo_results`, если результатов ещё нет; папку можно задать явно: `streamlit run dashboard.py -- --results ./папка`).
+Без PDF и ключа Gemini можно посмотреть дашборд на вымышленных данных: `.venv/bin/python demo_data.py --output-dir ./demo_results`.
 
 У каждого скрипта есть `--help`. Пороги риска для Этапа 3 вынесены в константы в начале `price_benchmark.py`.
 

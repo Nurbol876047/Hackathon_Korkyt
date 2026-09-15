@@ -1,0 +1,431 @@
+{
+  "is_synthetic": true,
+  "note": "Синтетическая база для демо: все компании вымышлены.",
+  "created_at": "2026-09-15T12:00:00",
+  "categories": {
+    "разработка веб-сайтов и порталов": {
+      "description": "Создание сайтов, лендингов, порталов и их доработка",
+      "price_range_kzt": {
+        "min": 900000,
+        "max": 5500000
+      },
+      "generated_at": "2026-09-15T12:00:00",
+      "companies": [
+        {
+          "company": "ТОО «Zhaiyq Apps»",
+          "city": "Павлодар",
+          "company_size": "крупная",
+          "offer": "Создание сайтов под ключ",
+          "tech_stack": "",
+          "price_kzt": 3400000
+        },
+        {
+          "company": "ИП Жанибеков А.",
+          "city": "Алматы",
+          "company_size": "средняя",
+          "offer": "Создание сайтов под ключ",
+          "tech_stack": "",
+          "price_kzt": 3610000
+        },
+        {
+          "company": "ИП Каримов Р.",
+          "city": "Актобе",
+          "company_size": "малая",
+          "offer": "Создание сайтов под ключ",
+          "tech_stack": "",
+          "price_kzt": 4390000
+        },
+        {
+          "company": "ТОО «Алаш Код»",
+          "city": "Алматы",
+          "company_size": "крупная",
+          "offer": "Создание сайтов под ключ",
+          "tech_stack": "",
+          "price_kzt": 2840000
+        },
+        {
+          "company": "ТОО «Beibitshilik Soft»",
+          "city": "Караганда",
+          "company_size": "малая",
+          "offer": "Создание сайтов под ключ",
+          "tech_stack": "",
+          "price_kzt": 1890000
+        },
+        {
+          "company": "ТОО «Тұран Софт»",
+          "city": "Актобе",
+          "company_size": "средняя",
+          "offer": "Создание сайтов под ключ",
+          "tech_stack": "",
+          "price_kzt": 1370000
+        },
+        {
+          "company": "ТОО «Kokshe IT»",
+          "city": "Шымкент",
+          "company_size": "малая",
+          "offer": "Создание сайтов под ключ",
+          "tech_stack": "",
+          "price_kzt": 2550000
+        },
+        {
+          "company": "ТОО «Ulytau Systems»",
+          "city": "Караганда",
+          "company_size": "крупная",
+          "offer": "Создание сайтов под ключ",
+          "tech_stack": "",
+          "price_kzt": 2110000
+        },
+        {
+          "company": "ТОО «Nomad Labs»",
+          "city": "Астана",
+          "company_size": "крупная",
+          "offer": "Создание сайтов под ключ",
+          "tech_stack": "",
+          "price_kzt": 3010000
+        },
+        {
+          "company": "ТОО «Turkistan Web»",
+          "city": "Астана",
+          "company_size": "средняя",
+          "offer": "Создание сайтов под ключ",
+          "tech_stack": "",
+          "price_kzt": 1260000
+        },
+        {
+          "company": "ТОО «Astana Dev»",
+          "city": "Караганда",
+          "company_size": "крупная",
+          "offer": "Создание сайтов под ключ",
+          "tech_stack": "",
+          "price_kzt": 3740000
+        },
+        {
+          "company": "ТОО «Jetysu Web»",
+          "city": "Актобе",
+          "company_size": "средняя",
+          "offer": "Создание сайтов под ключ",
+          "tech_stack": "",
+          "price_kzt": 3550000
+        }
+      ]
+    },
+    "мобильные приложения и чат-боты": {
+      "description": "Мобильные приложения, боты, интеграции с мессенджерами",
+      "price_range_kzt": {
+        "min": 5000000,
+        "max": 12000000
+      },
+      "generated_at": "2026-09-15T12:00:00",
+      "companies": [
+        {
+          "company": "ИП Жанибеков А.",
+          "city": "Актобе",
+          "company_size": "средняя",
+          "offer": "Мобильные приложения под ключ",
+          "tech_stack": "",
+          "price_kzt": 6130000
+        },
+        {
+          "company": "ТОО «Тұран Софт»",
+          "city": "Караганда",
+          "company_size": "малая",
+          "offer": "Мобильные приложения под ключ",
+          "tech_stack": "",
+          "price_kzt": 9690000
+        },
+        {
+          "company": "ИП Оспанова Д.",
+          "city": "Павлодар",
+          "company_size": "крупная",
+          "offer": "Мобильные приложения под ключ",
+          "tech_stack": "",
+          "price_kzt": 9530000
+        },
+        {
+          "company": "ТОО «Aqmola IT»",
+          "city": "Кокшетау",
+          "company_size": "крупная",
+          "offer": "Мобильные приложения под ключ",
+          "tech_stack": "",
+          "price_kzt": 6190000
+        },
+        {
+          "company": "ТОО «Bilim Digital»",
+          "city": "Павлодар",
+          "company_size": "малая",
+          "offer": "Мобильные приложения под ключ",
+          "tech_stack": "",
+          "price_kzt": 6140000
+        },
+        {
+          "company": "ТОО «Irtysh Digital»",
+          "city": "Шымкент",
+          "company_size": "средняя",
+          "offer": "Мобильные приложения под ключ",
+          "tech_stack": "",
+          "price_kzt": 11920000
+        },
+        {
+          "company": "ТОО «Kokshe IT»",
+          "city": "Павлодар",
+          "company_size": "крупная",
+          "offer": "Мобильные приложения под ключ",
+          "tech_stack": "",
+          "price_kzt": 8890000
+        },
+        {
+          "company": "ТОО «Beibitshilik Soft»",
+          "city": "Павлодар",
+          "company_size": "средняя",
+          "offer": "Мобильные приложения под ключ",
+          "tech_stack": "",
+          "price_kzt": 10890000
+        },
+        {
+          "company": "ТОО «Sary-Arka Tech»",
+          "city": "Актобе",
+          "company_size": "малая",
+          "offer": "Мобильные приложения под ключ",
+          "tech_stack": "",
+          "price_kzt": 6600000
+        },
+        {
+          "company": "ИП Каримов Р.",
+          "city": "Астана",
+          "company_size": "средняя",
+          "offer": "Мобильные приложения под ключ",
+          "tech_stack": "",
+          "price_kzt": 7800000
+        },
+        {
+          "company": "ТОО «Turkistan Web»",
+          "city": "Астана",
+          "company_size": "малая",
+          "offer": "Мобильные приложения под ключ",
+          "tech_stack": "",
+          "price_kzt": 11390000
+        },
+        {
+          "company": "ТОО «Jetysu Web»",
+          "city": "Кокшетау",
+          "company_size": "крупная",
+          "offer": "Мобильные приложения под ключ",
+          "tech_stack": "",
+          "price_kzt": 7200000
+        }
+      ]
+    },
+    "сопровождение и техподдержка ИС": {
+      "description": "Техническая поддержка, хостинг, сопровождение систем",
+      "price_range_kzt": {
+        "min": 1500000,
+        "max": 4500000
+      },
+      "generated_at": "2026-09-15T12:00:00",
+      "companies": [
+        {
+          "company": "ТОО «Turkistan Web»",
+          "city": "Шымкент",
+          "company_size": "средняя",
+          "offer": "Техническая поддержка под ключ",
+          "tech_stack": "",
+          "price_kzt": 2150000
+        },
+        {
+          "company": "ТОО «Aqmola IT»",
+          "city": "Алматы",
+          "company_size": "крупная",
+          "offer": "Техническая поддержка под ключ",
+          "tech_stack": "",
+          "price_kzt": 2980000
+        },
+        {
+          "company": "ТОО «Beibitshilik Soft»",
+          "city": "Актобе",
+          "company_size": "малая",
+          "offer": "Техническая поддержка под ключ",
+          "tech_stack": "",
+          "price_kzt": 4080000
+        },
+        {
+          "company": "ИП Жанибеков А.",
+          "city": "Алматы",
+          "company_size": "крупная",
+          "offer": "Техническая поддержка под ключ",
+          "tech_stack": "",
+          "price_kzt": 1970000
+        },
+        {
+          "company": "ТОО «Bilim Digital»",
+          "city": "Павлодар",
+          "company_size": "средняя",
+          "offer": "Техническая поддержка под ключ",
+          "tech_stack": "",
+          "price_kzt": 3280000
+        },
+        {
+          "company": "ТОО «Zhaiyq Apps»",
+          "city": "Шымкент",
+          "company_size": "средняя",
+          "offer": "Техническая поддержка под ключ",
+          "tech_stack": "",
+          "price_kzt": 3280000
+        },
+        {
+          "company": "ТОО «Kokshe IT»",
+          "city": "Шымкент",
+          "company_size": "крупная",
+          "offer": "Техническая поддержка под ключ",
+          "tech_stack": "",
+          "price_kzt": 2250000
+        },
+        {
+          "company": "ТОО «Nomad Labs»",
+          "city": "Кокшетау",
+          "company_size": "малая",
+          "offer": "Техническая поддержка под ключ",
+          "tech_stack": "",
+          "price_kzt": 3540000
+        },
+        {
+          "company": "ТОО «Astana Dev»",
+          "city": "Астана",
+          "company_size": "крупная",
+          "offer": "Техническая поддержка под ключ",
+          "tech_stack": "",
+          "price_kzt": 4150000
+        },
+        {
+          "company": "ИП Каримов Р.",
+          "city": "Актобе",
+          "company_size": "средняя",
+          "offer": "Техническая поддержка под ключ",
+          "tech_stack": "",
+          "price_kzt": 3800000
+        },
+        {
+          "company": "ТОО «Sary-Arka Tech»",
+          "city": "Караганда",
+          "company_size": "малая",
+          "offer": "Техническая поддержка под ключ",
+          "tech_stack": "",
+          "price_kzt": 2380000
+        },
+        {
+          "company": "ТОО «Qazaq Cloud»",
+          "city": "Алматы",
+          "company_size": "средняя",
+          "offer": "Техническая поддержка под ключ",
+          "tech_stack": "",
+          "price_kzt": 1500000
+        }
+      ]
+    },
+    "внедрение информационных систем": {
+      "description": "Внедрение СЭД, 1С и других готовых систем",
+      "price_range_kzt": {
+        "min": 2500000,
+        "max": 4500000
+      },
+      "generated_at": "2026-09-15T12:00:00",
+      "companies": [
+        {
+          "company": "ТОО «Nomad Labs»",
+          "city": "Актобе",
+          "company_size": "малая",
+          "offer": "Внедрение СЭД под ключ",
+          "tech_stack": "",
+          "price_kzt": 3570000
+        },
+        {
+          "company": "ТОО «Irtysh Digital»",
+          "city": "Актобе",
+          "company_size": "крупная",
+          "offer": "Внедрение СЭД под ключ",
+          "tech_stack": "",
+          "price_kzt": 4330000
+        },
+        {
+          "company": "ТОО «Jetysu Web»",
+          "city": "Кокшетау",
+          "company_size": "средняя",
+          "offer": "Внедрение СЭД под ключ",
+          "tech_stack": "",
+          "price_kzt": 3470000
+        },
+        {
+          "company": "ТОО «Zhaiyq Apps»",
+          "city": "Астана",
+          "company_size": "средняя",
+          "offer": "Внедрение СЭД под ключ",
+          "tech_stack": "",
+          "price_kzt": 4250000
+        },
+        {
+          "company": "ТОО «Тұран Софт»",
+          "city": "Актобе",
+          "company_size": "средняя",
+          "offer": "Внедрение СЭД под ключ",
+          "tech_stack": "",
+          "price_kzt": 2970000
+        },
+        {
+          "company": "ТОО «Astana Dev»",
+          "city": "Алматы",
+          "company_size": "крупная",
+          "offer": "Внедрение СЭД под ключ",
+          "tech_stack": "",
+          "price_kzt": 4390000
+        },
+        {
+          "company": "ТОО «Bilim Digital»",
+          "city": "Астана",
+          "company_size": "крупная",
+          "offer": "Внедрение СЭД под ключ",
+          "tech_stack": "",
+          "price_kzt": 3470000
+        },
+        {
+          "company": "ТОО «Aqmola IT»",
+          "city": "Астана",
+          "company_size": "крупная",
+          "offer": "Внедрение СЭД под ключ",
+          "tech_stack": "",
+          "price_kzt": 4030000
+        },
+        {
+          "company": "ТОО «Beibitshilik Soft»",
+          "city": "Алматы",
+          "company_size": "крупная",
+          "offer": "Внедрение СЭД под ключ",
+          "tech_stack": "",
+          "price_kzt": 3450000
+        },
+        {
+          "company": "ТОО «Kokshe IT»",
+          "city": "Кокшетау",
+          "company_size": "малая",
+          "offer": "Внедрение СЭД под ключ",
+          "tech_stack": "",
+          "price_kzt": 3030000
+        },
+        {
+          "company": "ИП Жанибеков А.",
+          "city": "Актобе",
+          "company_size": "крупная",
+          "offer": "Внедрение СЭД под ключ",
+          "tech_stack": "",
+          "price_kzt": 3340000
+        },
+        {
+          "company": "ИП Оспанова Д.",
+          "city": "Алматы",
+          "company_size": "крупная",
+          "offer": "Внедрение СЭД под ключ",
+          "tech_stack": "",
+          "price_kzt": 4010000
+        }
+      ]
+    }
+  }
+}

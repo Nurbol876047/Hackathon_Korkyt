@@ -1,6 +1,7 @@
 .venv/
 __pycache__/
-contracts.json
-contracts.csv
+/contracts.json
+/contracts.csv
 .env
-alternatives.json
+/alternatives.json
+results/
